@@ -10,6 +10,7 @@ import {
   FiCheckCircle,
   FiAlertCircle,
   FiDownload,
+  FiClipboard,
   FiActivity,
   FiPieChart,
   FiBarChart2,
@@ -685,13 +686,7 @@ const AdminHome = () => {
             </p>
           </div>
           <div className="flex gap-3">
-            <select
-              className={`px-4 py-2.5 ${theme.input.bg} border ${theme.input.border} ${theme.input.text} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
-            >
-              <option>Today</option>
-              <option>This Week</option>
-              <option>This Month</option>
-            </select>
+           
             <button
               onClick={handleExportPDF}
               className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
@@ -749,13 +744,7 @@ const AdminHome = () => {
             <h2 className={`text-lg font-semibold ${theme.text.primary}`}>
               Department Performance
             </h2>
-            <button
-              type="button"
-              onClick={() => navigate("/admin/departments")}
-              className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
-            >
-              View Details
-            </button>
+            
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -803,13 +792,7 @@ const AdminHome = () => {
             <h2 className={`text-lg font-semibold ${theme.text.primary}`}>
               Monthly Attendance Trends
             </h2>
-            <button
-              type="button"
-              onClick={() => navigate("/admin/attendance")}
-              className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
-            >
-              View Details
-            </button>
+            
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -857,13 +840,7 @@ const AdminHome = () => {
             <h2 className={`text-lg font-semibold ${theme.text.primary}`}>
               Employee Distribution
             </h2>
-            <button
-              type="button"
-              onClick={() => navigate("/admin/employees/distribution")}
-              className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
-            >
-              View Details
-            </button>
+            
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -901,13 +878,7 @@ const AdminHome = () => {
             <h2 className={`text-lg font-semibold ${theme.text.primary}`}>
               Leave Statistics
             </h2>
-            <button
-              type="button"
-              onClick={() => navigate("/admin/leaves")}
-              className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
-            >
-              View Details
-            </button>
+           
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -1109,7 +1080,7 @@ const AdminHome = () => {
               <div
                 className={`w-10 h-10 rounded-lg ${darkMode ? "bg-amber-500/20" : "bg-amber-100"} flex items-center justify-center text-amber-600 dark:text-amber-400 mb-2`}
               >
-                <FiTrendingUp className="w-5 h-5" />
+                <FiClipboard className="w-5 h-5" />
               </div>
               <span className={`text-sm font-medium ${theme.text.primary}`}>
                 View Reports

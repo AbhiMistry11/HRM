@@ -6,9 +6,10 @@ import hero2 from "../images/hero2.jpg";
 import hero3 from "../images/hero3.jpg";
 import {
   Menu, X, Clock, Calendar, BarChart3,
-  ChevronRight, LogIn, Users, TrendingUp, Shield,
+  ChevronRight, LogIn, Users,
   Zap, CheckCircle, Briefcase, Home, ArrowRight, MapPin
 } from "lucide-react";
+import {FiUserPlus , FiUserCheck }from "react-icons/fi";
 import jobService from "../services/jobService";
 
 export default function Homepage() {
@@ -443,7 +444,7 @@ export default function Homepage() {
               "Monitor Team Work Logs",
               "Team Overview & Analytics"
             ]}
-            icon={<TrendingUp />}
+            icon={<FiUserPlus  />}
             color="green"
           />
 
@@ -455,7 +456,7 @@ export default function Homepage() {
               "Leave Policies",
               "Full HR Reporting"
             ]}
-            icon={<Shield />}
+            icon={<FiUserCheck  />}
             color="blue"
           />
         </div>
@@ -540,9 +541,8 @@ export default function Homepage() {
               <img
                 src={logo}
                 alt="LiteHR"
-                className="h-10 w-10 object-contain rounded-md"
+                className="h-10 w-26 object-contain rounded-md"
               />
-              <span className="text-xl font-semibold tracking-wide">LiteHR</span>
             </div>
 
             <p className="text-sm text-[#9CA3AF] text-center">

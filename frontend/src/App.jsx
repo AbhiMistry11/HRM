@@ -63,10 +63,6 @@ import AttendanceReports from "./pages/Admin/attendance/AttendanceReports";
 import LeaveRequests from "./pages/Admin/leaves/LeaveRequests";
 import AdminLeavePolicy from "./pages/Admin/leaves/LeavePolicy";
 
-/* Roles (Admin) */
-import RoleList from "./pages/Admin/roles/RoleList";
-import AdminAddRole from "./pages/Admin/roles/AddRole";
-import EditRole from "./pages/Admin/roles/EditRole";
 
 /* Recruitment (Admin) */
 import JobList from "./pages/Admin/recruitment/JobList";
@@ -240,11 +236,6 @@ function App() {
           <Route path="departments/add" element={<AdminAddDepartment />} />
           <Route path="departments/edit/:id" element={<EditDepartment />} />
           <Route path="departments/:id" element={<DepartmentDetails />} />
-
-          {/* Roles */}
-          <Route path="roles" element={<RoleList />} />
-          <Route path="roles/add" element={<AdminAddRole />} />
-          <Route path="roles/edit/:id" element={<EditRole />} />
 
           {/* Attendance */}
           <Route path="attendance/daily" element={<DailyAttendance />} />

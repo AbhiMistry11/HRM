@@ -7,7 +7,6 @@ import {
   FiEdit2,
   FiUser,
   FiFilter,
-  FiDownload,
   FiPlus,
 } from "react-icons/fi";
 import { HiOutlineOfficeBuilding } from "react-icons/hi";
@@ -381,9 +380,7 @@ const EmployeeList = () => {
                       >
                         <FiEdit2 className="w-4 h-4" />
                       </Link>
-                      <button className={`p-2 rounded-lg ${theme.bg.tertiary} border ${theme.border.primary} ${theme.text.secondary} hover:text-purple-600 hover:border-purple-500/50 transition-colors`}>
-                        <FiDownload className="w-4 h-4" />
-                      </button>
+                      
                     </div>
                   </td>
                 </tr>

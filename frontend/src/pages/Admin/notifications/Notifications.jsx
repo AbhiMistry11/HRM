@@ -5,9 +5,8 @@ import { useTheme, useThemeClasses } from "../../../contexts/ThemeContext";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
-
   const [filter, setFilter] = useState("all");
-  const darkMode = useTheme() || false; // Default to false if undefined
+  const darkMode = useTheme() || false;
   const theme = useThemeClasses();
 
   const mapType = (t, msg) => {
@@ -120,148 +119,162 @@ const Notifications = () => {
   }).length;
   const alertCount = notifications.filter(n => n.originalType === "SYSTEM").length;
 
+  // Updated with darker colors for light mode
   const getTypeColor = (type) => {
     switch (type) {
-      case "success": return darkMode ? "from-emerald-400 to-green-500" : "from-emerald-500 to-emerald-600";
-      case "error": return darkMode ? "from-rose-400 to-red-500" : "from-rose-500 to-rose-600";
-      case "warning": return darkMode ? "from-amber-400 to-orange-500" : "from-amber-500 to-amber-600";
+      case "success": return darkMode ? "from-emerald-400 to-green-500" : "from-emerald-600 to-emerald-700";
+      case "error": return darkMode ? "from-rose-400 to-red-500" : "from-rose-600 to-rose-700";
+      case "warning": return darkMode ? "from-amber-400 to-orange-500" : "from-amber-600 to-amber-700";
       case "info":
-      default: return darkMode ? "from-cyan-400 to-blue-500" : "from-cyan-500 to-blue-600";
+      default: return darkMode ? "from-cyan-400 to-blue-500" : "from-blue-600 to-blue-700";
     }
   };
 
   const getTypeBg = (type) => {
     switch (type) {
-      case "success": return darkMode ? "bg-emerald-500/10" : "bg-emerald-50";
-      case "error": return darkMode ? "bg-rose-500/10" : "bg-rose-50";
-      case "warning": return darkMode ? "bg-amber-500/10" : "bg-amber-50";
+      case "success": return darkMode ? "bg-emerald-500/10" : "bg-emerald-100";
+      case "error": return darkMode ? "bg-rose-500/10" : "bg-rose-100";
+      case "warning": return darkMode ? "bg-amber-500/10" : "bg-amber-100";
       case "info":
-      default: return darkMode ? "bg-cyan-500/10" : "bg-cyan-50";
+      default: return darkMode ? "bg-blue-500/10" : "bg-blue-100";
     }
   };
 
-  // Helper functions for theme
+  // Helper functions for theme - Updated with more professional colors
   const getBgColor = () => darkMode ? "bg-gray-800" : "bg-white";
   const getBorderColor = () => darkMode ? "border-gray-700" : "border-gray-200";
   const getTextColor = () => darkMode ? "text-white" : "text-gray-800";
   const getSecondaryTextColor = () => darkMode ? "text-gray-400" : "text-gray-600";
-  const getCardBg = () => darkMode ? "bg-gray-700/50" : "bg-gray-100";
-  const getHeaderGradient = () => darkMode ? "from-slate-900 via-purple-900 to-blue-900" : "from-slate-100 via-purple-100 to-blue-100";
-  const getHeaderTextColor = () => darkMode ? "text-slate-300" : "text-slate-600";
+  const getCardBg = () => darkMode ? "bg-gray-700/50" : "bg-gray-50";
+  
+  // Updated header gradient for light mode to be more subtle
+  const getHeaderGradient = () => darkMode ? "from-gray-900 via-gray-800 to-gray-900" : "from-gray-50 via-blue-50 to-gray-100";
+  const getHeaderTextColor = () => darkMode ? "text-gray-300" : "text-gray-600";
+  
+  // Darker text colors for better visibility
+  const getAccentTextColor = () => darkMode ? "text-blue-400" : "text-blue-700";
+  const getSuccessTextColor = () => darkMode ? "text-emerald-400" : "text-emerald-700";
+  const getWarningTextColor = () => darkMode ? "text-amber-400" : "text-amber-700";
+  const getErrorTextColor = () => darkMode ? "text-rose-400" : "text-rose-700";
 
   return (
     <div className="w-full">
       {/* Header */}
-      <div className={`relative mb-10 overflow-hidden rounded-2xl bg-gradient-to-br ${getHeaderGradient()} p-8`}>
-        <div className="absolute inset-0 opacity-20" style={{
+      <div className={`relative mb-8 overflow-hidden rounded-xl bg-gradient-to-br ${getHeaderGradient()} p-6 border ${getBorderColor()}`}>
+        <div className="absolute inset-0 opacity-10" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
         }}></div>
 
         <div className="relative z-10">
-          <h1 className={`text-4xl font-bold ${getTextColor()} mb-2 bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 to-purple-300`}>
+          <h1 className={`text-3xl font-bold ${getTextColor()} mb-2`}>
             Notifications
           </h1>
           <p className={getHeaderTextColor()}>Stay updated with system alerts and important announcements.</p>
 
-          {/* Stats Grid */}
-          <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Stats Grid - Updated with darker colors */}
+          <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: <FiBell className="w-6 h-6" />, label: "Total", value: notifications.length.toString(), change: "", trend: "neutral", color: darkMode ? "from-cyan-400 to-blue-500" : "from-cyan-500 to-blue-600" },
-              { icon: <div className="relative"><FiBell className="w-6 h-6" /><div className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full"></div></div>, label: "Unread", value: unreadCount.toString(), change: "", trend: "neutral", color: darkMode ? "from-amber-400 to-orange-500" : "from-amber-500 to-amber-600" },
-              { icon: <FiCalendar className="w-6 h-6" />, label: "Today", value: todayCount.toString(), change: "", trend: "neutral", color: darkMode ? "from-emerald-400 to-green-500" : "from-emerald-500 to-emerald-600" },
-              { icon: <FiAlertCircle className="w-6 h-6" />, label: "Alerts", value: alertCount.toString(), change: "", trend: "neutral", color: darkMode ? "from-rose-400 to-red-500" : "from-rose-500 to-rose-600" },
+              { 
+                icon: <FiBell className="w-6 h-6" />, 
+                label: "Total", 
+                value: notifications.length.toString(), 
+                color: darkMode ? "from-blue-400 to-blue-500" : "from-blue-600 to-blue-700",
+                textColor: getAccentTextColor()
+              },
+              { 
+                icon: <div className="relative"><FiBell className="w-6 h-6" /><div className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full"></div></div>, 
+                label: "Unread", 
+                value: unreadCount.toString(), 
+                color: darkMode ? "from-amber-400 to-orange-500" : "from-amber-600 to-amber-700",
+                textColor: getWarningTextColor()
+              },
+              { 
+                icon: <FiCalendar className="w-6 h-6" />, 
+                label: "Today", 
+                value: todayCount.toString(), 
+                color: darkMode ? "from-emerald-400 to-green-500" : "from-emerald-600 to-emerald-700",
+                textColor: getSuccessTextColor()
+              },
+              { 
+                icon: <FiAlertCircle className="w-6 h-6" />, 
+                label: "Alerts", 
+                value: alertCount.toString(), 
+                color: darkMode ? "from-rose-400 to-red-500" : "from-rose-600 to-rose-700",
+                textColor: getErrorTextColor()
+              },
             ].map((stat, index) => (
-              <div key={index} className="relative group">
-                <div className={`absolute -inset-1 bg-gradient-to-r ${darkMode ? 'from-cyan-500 to-purple-500' : 'from-cyan-400 to-purple-400'} rounded-xl blur opacity-20 group-hover:opacity-30 transition duration-1000`}></div>
-                <div className={`relative ${darkMode ? 'bg-slate-900/50' : 'bg-white/80'} backdrop-blur-sm border ${getBorderColor()} rounded-xl p-4`}>
-                  <div className="flex items-center justify-between">
-                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center text-white`}>
-                      {stat.icon}
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        {stat.trend === "up" ? <FiTrendingUp className="w-4 h-4 text-emerald-400" /> :
-                          stat.trend === "down" ? <div className="w-4 h-4 text-rose-400 rotate-90">↓</div> :
-                            <div className={`w-4 h-0.5 ${darkMode ? 'bg-slate-400' : 'bg-slate-300'}`}></div>}
-                        <span className={`text-sm font-medium ${stat.trend === "up" ? "text-emerald-400" :
-                          stat.trend === "down" ? "text-rose-400" :
-                            darkMode ? "text-slate-400" : "text-slate-500"
-                          }`}>
-                          {stat.change}
-                        </span>
-                      </div>
-                    </div>
+              <div key={index} className={`${getBgColor()} rounded-lg border ${getBorderColor()} p-4 hover:shadow-sm transition-shadow`}>
+                <div className="flex items-center justify-between">
+                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center text-white`}>
+                    {stat.icon}
                   </div>
-                  <h3 className={`text-2xl font-bold ${getTextColor()} mt-4`}>{stat.value}</h3>
-                  <p className={getSecondaryTextColor()}>{stat.label}</p>
                 </div>
+                <h3 className={`text-2xl font-bold ${getTextColor()} mt-4`}>{stat.value}</h3>
+                <p className={getSecondaryTextColor()}>{stat.label}</p>
               </div>
             ))}
           </div>
 
-          {/* Action Buttons */}
-          <div className="mt-8 flex gap-3">
+          {/* Action Buttons - Updated with darker colors */}
+          <div className="mt-6 flex gap-3">
             <button
               onClick={markAllAsRead}
-              className="relative group flex items-center gap-2 px-4 py-2.5"
+              className={`flex items-center gap-2 px-4 py-2.5 ${darkMode ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-emerald-600 hover:bg-emerald-700'} text-white rounded-lg font-medium transition-colors`}
             >
-              <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-green-500 rounded-lg blur opacity-0 group-hover:opacity-30"></div>
-              <div className={`relative flex items-center gap-2 ${darkMode ? 'bg-slate-800/50' : 'bg-white/80'} backdrop-blur-sm border ${getBorderColor()} px-4 py-2.5 rounded-lg hover:border-emerald-500/30 ${getTextColor()}`}>
-                <FiCheck className="w-4 h-4" />
-                Mark All as Read
-              </div>
+              <FiCheck className="w-4 h-4" />
+              Mark All as Read
             </button>
-
+            <button
+              onClick={clearAll}
+              className={`flex items-center gap-2 px-4 py-2.5 ${darkMode ? 'bg-gray-700 hover:bg-gray-600 border border-gray-600' : 'bg-gray-100 hover:bg-gray-200 border border-gray-300'} ${darkMode ? 'text-gray-300' : 'text-gray-700'} rounded-lg font-medium transition-colors`}
+            >
+              <FiTrash2 className="w-4 h-4" />
+              Clear All
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className={`bg-gradient-to-br ${darkMode ? 'from-slate-900 to-slate-800' : 'from-slate-50 to-slate-100'} rounded-2xl p-6 border ${getBorderColor()} mb-6`}>
-        <div className="flex flex-wrap gap-3">
+      {/* Filters - Updated with darker colors */}
+      <div className={`${getBgColor()} rounded-xl p-4 border ${getBorderColor()} mb-6`}>
+        <div className="flex flex-wrap gap-2">
           {[
-            { label: "All", value: "all", color: darkMode ? "from-cyan-400 to-blue-500" : "from-cyan-500 to-blue-600" },
-            { label: "Unread", value: "unread", color: darkMode ? "from-amber-400 to-orange-500" : "from-amber-500 to-amber-600", count: unreadCount },
-            { label: "Read", value: "read", color: darkMode ? "from-emerald-400 to-green-500" : "from-emerald-500 to-emerald-600" },
-            { label: "Errors", value: "error", color: darkMode ? "from-rose-400 to-red-500" : "from-rose-500 to-rose-600" },
-            { label: "Success", value: "success", color: darkMode ? "from-emerald-400 to-green-500" : "from-emerald-500 to-emerald-600" },
-            { label: "Warnings", value: "warning", color: darkMode ? "from-amber-400 to-orange-500" : "from-amber-500 to-amber-600" },
+            { label: "All", value: "all", color: darkMode ? "from-blue-400 to-blue-500" : "from-blue-600 to-blue-700" },
+            { label: "Unread", value: "unread", color: darkMode ? "from-amber-400 to-orange-500" : "from-amber-600 to-amber-700", count: unreadCount },
+            { label: "Read", value: "read", color: darkMode ? "from-emerald-400 to-green-500" : "from-emerald-600 to-emerald-700" },
+            { label: "Errors", value: "error", color: darkMode ? "from-rose-400 to-red-500" : "from-rose-600 to-rose-700" },
+            { label: "Success", value: "success", color: darkMode ? "from-emerald-400 to-green-500" : "from-emerald-600 to-emerald-700" },
+            { label: "Warnings", value: "warning", color: darkMode ? "from-amber-400 to-orange-500" : "from-amber-600 to-amber-700" },
           ].map((btn) => (
             <button
               key={btn.value}
               onClick={() => setFilter(btn.value)}
-              className={`relative group px-4 py-2 rounded-lg font-medium ${filter === btn.value
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === btn.value
                 ? `bg-gradient-to-br ${btn.color} text-white`
-                : `${getCardBg()} ${getSecondaryTextColor()} hover:text-purple-600 border ${getBorderColor()} hover:border-purple-500/30`
+                : `${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} ${darkMode ? 'text-gray-300' : 'text-gray-700'} border ${getBorderColor()}`
                 }`}
             >
               <div className="flex items-center gap-2">
                 {btn.label}
                 {btn.count > 0 && (
-                  <span className="px-1.5 py-0.5 text-xs bg-rose-500 text-white rounded-full">
+                  <span className="px-1.5 py-0.5 text-xs bg-rose-600 text-white rounded-full">
                     {btn.count}
                   </span>
                 )}
               </div>
             </button>
           ))}
-          <button
-            onClick={clearAll}
-            className={`ml-auto px-4 py-2 border ${darkMode ? 'border-rose-500/30' : 'border-rose-200'} ${darkMode ? 'text-rose-400' : 'text-rose-600'} rounded-lg hover:bg-rose-500/10 font-medium`}
-          >
-            Clear All
-          </button>
         </div>
       </div>
 
       {/* Notifications List */}
-      <div className={`bg-gradient-to-br ${darkMode ? 'from-slate-900 to-slate-800' : 'from-slate-50 to-slate-100'} rounded-2xl border ${getBorderColor()} overflow-hidden`}>
+      <div className={`${getBgColor()} rounded-xl border ${getBorderColor()} overflow-hidden`}>
         {filteredNotifications.length > 0 ? (
-          <div className="divide-y divide-gray-700/10">
+          <div className="divide-y divide-gray-200 dark:divide-gray-700">
             {filteredNotifications.map((notification) => (
               <div
                 key={notification.id}
-                className={`p-6 hover:bg-white/5 transition-colors ${!notification.read ? getTypeBg(notification.type) : ''}`}
+                className={`p-6 hover:${darkMode ? 'bg-gray-700/50' : 'bg-gray-50'} transition-colors ${!notification.read ? getTypeBg(notification.type) : ''}`}
               >
                 <div className="flex items-start gap-4">
                   <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${getTypeColor(notification.type)} flex items-center justify-center text-white`}>
@@ -273,30 +286,28 @@ const Notifications = () => {
                       <div className="flex items-center gap-2">
                         <h4 className={`font-semibold ${getTextColor()}`}>{notification.title}</h4>
                         {!notification.read && (
-                          <span className="inline-block w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></span>
+                          <span className={`inline-block w-2 h-2 ${darkMode ? 'bg-blue-500' : 'bg-blue-600'} rounded-full animate-pulse`}></span>
                         )}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className={`text-sm ${getSecondaryTextColor()}`}>
-                          {notification.timestamp.split(' ')[0]} • {notification.timestamp.split(' ')[1]}
-                        </span>
-                      </div>
+                      <span className={`text-sm ${getSecondaryTextColor()}`}>
+                        {notification.timestamp.split(' ')[0]} • {notification.timestamp.split(' ')[1]}
+                      </span>
                     </div>
 
-                    <p className={`${getSecondaryTextColor()} mb-3`}>{notification.message}</p>
+                    <p className={`${getSecondaryTextColor()} mb-4`}>{notification.message}</p>
 
                     <div className="flex gap-2">
                       {!notification.read && (
                         <button
                           onClick={() => markAsRead(notification.id)}
-                          className={`px-3 py-1 text-sm ${darkMode ? 'bg-emerald-500/20' : 'bg-emerald-100'} ${darkMode ? 'text-emerald-400' : 'text-emerald-600'} rounded-lg hover:${darkMode ? 'bg-emerald-500/30' : 'bg-emerald-200'} border ${darkMode ? 'border-emerald-500/30' : 'border-emerald-200'}`}
+                          className={`px-3 py-1.5 text-sm ${darkMode ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-emerald-600 hover:bg-emerald-700'} text-white rounded-lg font-medium transition-colors`}
                         >
                           Mark as Read
                         </button>
                       )}
                       <button
                         onClick={() => deleteNotification(notification.id)}
-                        className={`px-3 py-1 text-sm ${darkMode ? 'bg-rose-500/20' : 'bg-rose-100'} ${darkMode ? 'text-rose-400' : 'text-rose-600'} rounded-lg hover:${darkMode ? 'bg-rose-500/30' : 'bg-rose-200'} border ${darkMode ? 'border-rose-500/30' : 'border-rose-200'}`}
+                        className={`px-3 py-1.5 text-sm ${darkMode ? 'bg-rose-600 hover:bg-rose-700' : 'bg-rose-600 hover:bg-rose-700'} text-white rounded-lg font-medium transition-colors`}
                       >
                         Delete
                       </button>
@@ -309,8 +320,8 @@ const Notifications = () => {
         ) : (
           <div className="p-8 text-center">
             <div className="max-w-md mx-auto">
-              <div className={`w-16 h-16 mx-auto mb-4 rounded-full ${getCardBg()} flex items-center justify-center border ${getBorderColor()}`}>
-                <FiBell className="w-8 h-8 text-gray-500" />
+              <div className={`w-16 h-16 mx-auto mb-4 rounded-full ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} flex items-center justify-center`}>
+                <FiBell className={`w-8 h-8 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
               </div>
               <h3 className={`text-lg font-medium ${getTextColor()} mb-2`}>No notifications found</h3>
               <p className={`${getSecondaryTextColor()} mb-4`}>
@@ -322,7 +333,7 @@ const Notifications = () => {
               {filter !== "all" && (
                 <button
                   onClick={() => setFilter("all")}
-                  className="text-cyan-400 hover:text-cyan-300 font-medium"
+                  className={`${darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'} font-medium`}
                 >
                   View all notifications
                 </button>
@@ -331,7 +342,7 @@ const Notifications = () => {
           </div>
         )}
 
-        {/* Pagination */}
+        {/* Pagination - Updated with darker colors */}
         {filteredNotifications.length > 0 && (
           <div className={`px-6 py-4 border-t ${getBorderColor()} flex items-center justify-between`}>
             <div className={`text-sm ${getSecondaryTextColor()}`}>
@@ -339,27 +350,25 @@ const Notifications = () => {
               <span className={`font-medium ${getTextColor()}`}>{notifications.length}</span> notifications
             </div>
             <div className="flex gap-2">
-              <button className={`px-3 py-2 border ${getBorderColor()} rounded-lg hover:bg-white/5 ${getSecondaryTextColor()} disabled:opacity-50`}>
+              <button className={`px-3 py-2 ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} border ${getBorderColor()} rounded-lg ${getSecondaryTextColor()} transition-colors`}>
                 Previous
               </button>
-              <button className={`px-3 py-2 ${darkMode ? 'bg-cyan-500/20' : 'bg-cyan-100'} ${darkMode ? 'text-cyan-400' : 'text-cyan-600'} border ${darkMode ? 'border-cyan-500/30' : 'border-cyan-200'} rounded-lg hover:${darkMode ? 'bg-cyan-500/30' : 'bg-cyan-200'}`}>
+              <button className={`px-3 py-2 ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'} text-white border ${darkMode ? 'border-blue-500' : 'border-blue-600'} rounded-lg transition-colors`}>
                 1
               </button>
-              <button className={`px-3 py-2 border ${getBorderColor()} rounded-lg hover:bg-white/5 ${getSecondaryTextColor()}`}>
+              <button className={`px-3 py-2 ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} border ${getBorderColor()} rounded-lg ${getSecondaryTextColor()} transition-colors`}>
                 2
               </button>
-              <button className={`px-3 py-2 border ${getBorderColor()} rounded-lg hover:bg-white/5 ${getSecondaryTextColor()}`}>
+              <button className={`px-3 py-2 ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} border ${getBorderColor()} rounded-lg ${getSecondaryTextColor()} transition-colors`}>
                 3
               </button>
-              <button className={`px-3 py-2 border ${getBorderColor()} rounded-lg hover:bg-white/5 ${getSecondaryTextColor()}`}>
+              <button className={`px-3 py-2 ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} border ${getBorderColor()} rounded-lg ${getSecondaryTextColor()} transition-colors`}>
                 Next
               </button>
             </div>
           </div>
         )}
       </div>
-
-
     </div>
   );
 };

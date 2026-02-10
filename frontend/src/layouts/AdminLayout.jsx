@@ -144,16 +144,6 @@ const AdminLayout = ({ children, logout }) => {
       ]
     },
 
-    // Roles & Permissions Module
-    {
-      label: "Roles & Permissions",
-      icon: <FiShield />,
-      path: "/admin/roles",
-      subItems: [
-        { label: "Role List", path: "/admin/roles" },
-        { label: "Add Role", path: "/admin/roles/add" },
-      ]
-    },
 
     // Attendance Module
     {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { FiCalendar, FiChevronLeft, FiChevronRight, FiDownload, FiUsers, FiTrendingUp, FiTrendingDown, FiClock, FiPieChart } from "react-icons/fi";
+import { FiCalendar, FiChevronLeft, FiChevronRight,FiBarChart2 , FiDownload, FiUsers, FiTrendingUp, FiTrendingDown, FiClock, FiPieChart } from "react-icons/fi";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useTheme, getThemeClasses } from "../../../contexts/ThemeContext";
 import axios from "axios";
@@ -310,7 +310,7 @@ const MonthlyAttendance = () => {
               <h3 className={`text-lg font-semibold ${themeClasses.text.primary}`}>Department Performance</h3>
               <p className={themeClasses.text.secondary}>Attendance rate by department</p>
             </div>
-            <FiTrendingUp className="w-6 h-6 text-purple-400" />
+            <FiBarChart2  className="w-6 h-6 text-purple-400" />
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
