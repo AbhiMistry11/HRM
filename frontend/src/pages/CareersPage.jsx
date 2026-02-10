@@ -5,7 +5,8 @@ import {
   Heart, Globe, Award, Users as UsersIcon,
   ArrowRight, Upload, Mail, Phone, FileText,
   CheckCircle, Clock, Home, Linkedin, Github,
-  ExternalLink
+  ExternalLink, Menu, X, LogIn, Users, TrendingUp, Shield,
+  Zap, ChevronRight, BarChart3, Calendar, X as XIcon
 } from 'lucide-react';
 import LiteHRLogo from '../images/LiteHR_logo.png';
 import { toast } from 'react-hot-toast';
@@ -13,6 +14,7 @@ import jobService from '../services/jobService';
 
 export default function CareersPage() {
   const navigate = useNavigate();
+  const [menu, setMenu] = useState(false);
 
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +32,12 @@ export default function CareersPage() {
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
-  const [selectedJob, setSelectedJob] = useState(null);
+
+  const [selectedJob, setSelectedJob] = useState(null); // For Application Form
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
+
+  const [viewJob, setViewJob] = useState(null); // For Details Modal
+  const [showJobDetailsModal, setShowJobDetailsModal] = useState(false);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -47,6 +54,31 @@ export default function CareersPage() {
     fetchJobs();
   }, []);
 
+  // Navigation handlers
+  const handleLoginClick = () => {
+    navigate("/login");
+  };
+
+  const handleHomeClick = () => {
+    navigate("/");
+  };
+
+  const handleFeaturesClick = () => {
+    navigate("/");
+    setTimeout(() => {
+      const features = document.getElementById('features');
+      if (features) features.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
+  const handleModulesClick = () => {
+    navigate("/");
+    setTimeout(() => {
+      const modules = document.getElementById('modules');
+      if (modules) modules.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
   const benefits = [
     { icon: <DollarSign size={24} />, title: "Competitive Salary", description: "Above industry average compensation with regular reviews" },
     { icon: <Heart size={24} />, title: "Health & Wellness", description: "Comprehensive medical, dental, vision insurance for you and family" },
@@ -56,19 +88,35 @@ export default function CareersPage() {
     { icon: <Briefcase size={24} />, title: "Flexible PTO", description: "Unlimited vacation days and paid time off" },
   ];
 
-  const handleApplyClick = (job) => {
+  // UPDATED: Open modal instead of scrolling
+  // UPDATED: Open apply modal
+  const handleApplyClick = (job, e) => {
+    if (e) e.stopPropagation(); // Prevent opening details modal if clicking apply button directly
     setSelectedJob(job);
     setApplicationForm({
       ...applicationForm,
       position: job.title
     });
-    document.getElementById('apply-form').scrollIntoView({ behavior: 'smooth' });
+    setShowApplicationModal(true);
+    setShowJobDetailsModal(false); // Close details if open
+  };
+
+  // NEW: Open details modal
+  const handleViewJob = (job) => {
+    setViewJob(job);
+    setShowJobDetailsModal(true);
+  };
+
+  // NEW: Close modal
+  const handleCloseModal = () => {
+    setShowApplicationModal(false);
+    setShowJobDetailsModal(false);
   };
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
         alert('File size must be less than 5MB');
         return;
       }
@@ -108,7 +156,6 @@ export default function CareersPage() {
       formData.append('linkedin', applicationForm.linkedin);
       formData.append('github', applicationForm.github);
 
-      // Additional fields backend might expect/support
       formData.append('currentCompany', '');
       formData.append('experience', '');
 
@@ -128,6 +175,7 @@ export default function CareersPage() {
       });
       setSelectedJob(null);
       setShowSuccess(true);
+      setShowApplicationModal(false); // Close modal on success
       toast.success("Application submitted successfully!");
 
       setTimeout(() => setShowSuccess(false), 5000);
@@ -137,36 +185,163 @@ export default function CareersPage() {
     }
   };
 
+  // Helper function to format salary with ₹ symbol
+  const formatSalary = (job) => {
+    if (job.salaryRangeMin && job.salaryRangeMax) {
+      return `₹${Number(job.salaryRangeMin).toLocaleString('en-IN')} - ₹${Number(job.salaryRangeMax).toLocaleString('en-IN')}`;
+    } else if (job.salary) {
+      return job.salary.includes('₹') ? job.salary : `₹${job.salary}`;
+    }
+    return 'Not specified';
+  };
+
+  // Helper function to format experience
+  const formatExperience = (job) => {
+    if (job.experienceMin) {
+      return `${job.experienceMin} ${job.experienceMin === "0" ? "Fresher" : "years+"}`;
+    }
+    return 'Experience not specified';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#020617] to-[#0F172A] text-white">
-      {/* Navigation Bar */}
-      <header className="fixed top-0 left-0 w-full h-16 bg-[#0F172A]/90 backdrop-blur-md z-50 px-6 md:px-20 border-b border-[#374151]">
-        <div className="flex items-center justify-between h-full">
-          <div className="rounded-lg p-2 shadow-sm">
-            <img
-              src={LiteHRLogo}
-              alt="LiteHR"
-              className="h-8 w-auto object-contain"
-            />
-          </div>
+      {/* ============= PREMIUM NAVBAR ============= */}
+      <header className="
+        fixed top-0 left-0 w-full h-16 
+        bg-[#0F172A]/90 backdrop-blur-md
+        text-white flex items-center justify-between 
+        shadow-[0_3px_20px_rgba(0,0,0,0.35)]
+        z-50 px-6 md:px-20 border-b border-[#374151]
+      ">
+        {/* Logo */}
+        <div
+          className="flex items-center gap-3 cursor-pointer"
+          onClick={handleHomeClick}
+        >
+          <img
+            src={LiteHRLogo}
+            alt="LiteHR"
+            className="h-10 w-26 object-contain rounded-md"
+          />
+        </div>
 
-          <div className="flex items-center gap-4">
+        {/* Desktop nav */}
+        <nav className="hidden sm:flex gap-8 text-sm tracking-wide">
+          <button
+            onClick={handleHomeClick}
+            className="relative text-sm tracking-wide hover:text-[#8B5CF6] transition group"
+          >
+            Home
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#8B5CF6] group-hover:w-full transition-all duration-300"></span>
+          </button>
+          <button
+            onClick={handleFeaturesClick}
+            className="relative text-sm tracking-wide hover:text-[#8B5CF6] transition group"
+          >
+            Features
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#8B5CF6] group-hover:w-full transition-all duration-300"></span>
+          </button>
+          <button
+            onClick={handleModulesClick}
+            className="relative text-sm tracking-wide hover:text-[#8B5CF6] transition group"
+          >
+            Modules
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#8B5CF6] group-hover:w-full transition-all duration-300"></span>
+          </button>
+          <button
+            onClick={() => { }}
+            className="relative text-sm tracking-wide text-[#8B5CF6] transition group"
+          >
+            Careers
+            <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#8B5CF6] transition-all duration-300"></span>
+          </button>
+        </nav>
+
+        {/* Login Button */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleLoginClick}
+            className="
+              bg-[#8B5CF6] hover:bg-[#7C3AED]
+              px-5 py-2 text-sm rounded-lg shadow-lg 
+              transition-all duration-300 hover:shadow-xl
+              hover:scale-[1.05] active:scale-[0.98]
+              flex items-center gap-2
+            "
+          >
+            <LogIn size={16} />
+            Login
+          </button>
+
+          <button
+            onClick={() => setMenu(!menu)}
+            className="sm:hidden p-2 rounded-lg hover:bg-[#1E293B] transition"
+          >
+            {menu ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
+      </header>
+
+      {/* MOBILE MENU */}
+      {menu && (
+        <div className="
+          fixed top-16 left-0 w-full bg-[#0F172A] text-white p-6
+          sm:hidden z-40 border-b border-[#1F2937]
+        ">
+          <div className="flex flex-col gap-4 text-sm">
             <button
-              onClick={() => navigate('/')}
-              className="text-sm hover:text-[#8B5CF6] transition flex items-center gap-2"
+              onClick={() => {
+                handleHomeClick();
+                setMenu(false);
+              }}
+              className="py-3 border-b border-[#1F2937] hover:bg-[#1E293B] px-2 rounded transition text-[#D1D5DB] flex items-center gap-2"
             >
               <Home size={16} />
-              Back to Home
+              Home
             </button>
             <button
-              onClick={() => navigate('/manager/dashboard')}
-              className="bg-[#8B5CF6] hover:bg-[#7C3AED] px-4 py-2 rounded-lg text-sm transition shadow-lg"
+              onClick={() => {
+                handleFeaturesClick();
+                setMenu(false);
+              }}
+              className="py-3 border-b border-[#1F2937] hover:bg-[#1E293B] px-2 rounded transition text-[#D1D5DB]"
             >
+              Features
+            </button>
+            <button
+              onClick={() => {
+                handleModulesClick();
+                setMenu(false);
+              }}
+              className="py-3 border-b border-[#1F2937] hover:bg-[#1E293B] px-2 rounded transition text-[#D1D5DB]"
+            >
+              Modules
+            </button>
+            <button
+              onClick={() => {
+                setMenu(false);
+              }}
+              className="py-3 border-b border-[#1F2937] hover:bg-[#1E293B] px-2 rounded transition text-[#D1D5DB] flex items-center gap-2 text-[#8B5CF6]"
+            >
+              <Briefcase size={16} />
+              Careers
+            </button>
+            <button
+              onClick={() => {
+                handleLoginClick();
+                setMenu(false);
+              }}
+              className="
+                bg-[#8B5CF6] hover:bg-[#7C3AED] px-4 py-3 rounded-lg shadow transition
+                flex items-center justify-center gap-2
+              "
+            >
+              <LogIn size={16} />
               Login
             </button>
           </div>
         </div>
-      </header>
+      )}
 
       {/* Main Content */}
       <main className="pt-20">
@@ -234,7 +409,8 @@ export default function CareersPage() {
                 {jobs.map((job) => (
                   <div
                     key={job.id}
-                    className="bg-[#1E293B] rounded-xl p-6 border border-[#374151] hover:border-[#8B5CF6] transition-all hover:shadow-xl hover:shadow-[#8B5CF6]/10 group flex flex-col h-full"
+                    onClick={() => handleViewJob(job)} // Make card clickable
+                    className="bg-[#1E293B] rounded-xl p-6 border border-[#374151] hover:border-[#8B5CF6] transition-all hover:shadow-xl hover:shadow-[#8B5CF6]/10 group flex flex-col h-full cursor-pointer"
                   >
                     {/* Header */}
                     <div className="flex justify-between items-start mb-4">
@@ -251,7 +427,7 @@ export default function CareersPage() {
                       </span>
                     </div>
 
-                    {/* Location and Salary */}
+                    {/* Location, Salary and Experience */}
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center gap-2 text-sm text-[#D1D5DB]">
                         <MapPin size={16} className="text-[#9CA3AF] flex-shrink-0" />
@@ -259,7 +435,11 @@ export default function CareersPage() {
                       </div>
                       <div className="flex items-center gap-2 text-sm text-[#D1D5DB]">
                         <DollarSign size={16} className="text-[#9CA3AF] flex-shrink-0" />
-                        <span className="truncate">{job.salary}</span>
+                        <span className="truncate">{formatSalary(job)}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-[#D1D5DB]">
+                        <Briefcase size={16} className="text-[#9CA3AF] flex-shrink-0" />
+                        <span className="truncate">{formatExperience(job)}</span>
                       </div>
                     </div>
 
@@ -280,7 +460,7 @@ export default function CareersPage() {
                         <ul className="space-y-2">
                           {job.requirements.split('\n').filter(req => req.trim()).slice(0, 3).map((req, idx) => (
                             <li key={idx} className="flex items-start gap-2 text-sm text-[#D1D5DB]">
-                              <div className="w-1.5 h-1.5 bg-[#8B5CF6] rounded-full mt-1.5 flex-shrink-0"></div>
+                              <div className="w-1.5 h-1.5 bg-[#8B5CF6] rounded-full mt=1.5 flex-shrink-0"></div>
                               <span className="flex-1">{req.trim()}</span>
                             </li>
                           ))}
@@ -296,179 +476,14 @@ export default function CareersPage() {
                       Apply Now
                       <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
                     </button>
+                    {/* View Details Text (Optional hint) */}
+                    <p className="text-center text-xs text-[#9CA3AF] mt-3 group-hover:text-[#8B5CF6] transition-colors">
+                      Click card to view full details
+                    </p>
                   </div>
                 ))}
               </div>
             )}
-          </div>
-        </section>
-
-        {/* Application Form */}
-        <section id="apply-form" className="py-20 px-6 md:px-20 bg-[#0F172A]">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-[#1E293B] rounded-2xl p-8 border border-[#374151]">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 bg-[rgba(139,92,246,0.2)] rounded-lg flex items-center justify-center">
-                  <FileText size={24} className="text-[#8B5CF6]" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold">
-                    {selectedJob ? `Apply for: ${selectedJob.title}` : 'Apply for Position'}
-                  </h3>
-                  <p className="text-[#9CA3AF]">Fill out your application below</p>
-                </div>
-              </div>
-
-              <form onSubmit={handleSubmitApplication} className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Full Name *</label>
-                    <input
-                      type="text"
-                      required
-                      value={applicationForm.name}
-                      onChange={(e) => setApplicationForm({ ...applicationForm, name: e.target.value })}
-                      className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
-                      placeholder="John Doe"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Email Address *</label>
-                    <input
-                      type="email"
-                      required
-                      value={applicationForm.email}
-                      onChange={(e) => setApplicationForm({ ...applicationForm, email: e.target.value })}
-                      className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
-                      placeholder="john@example.com"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Phone Number</label>
-                    <input
-                      type="tel"
-                      value={applicationForm.phone}
-                      onChange={(e) => setApplicationForm({ ...applicationForm, phone: e.target.value })}
-                      className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
-                      placeholder="+1 (555) 123-4567"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Position *</label>
-                    <select
-                      required
-                      value={applicationForm.position}
-                      onChange={(e) => {
-                        const job = jobs.find(j => j.title === e.target.value);
-                        setSelectedJob(job);
-                        setApplicationForm({ ...applicationForm, position: e.target.value });
-                      }}
-                      className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
-                    >
-                      <option value="">Select a position</option>
-                      {jobs.map(job => (
-                        <option key={job.id} value={job.title}>{job.title}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#D1D5DB] mb-2">LinkedIn Profile</label>
-                    <div className="relative">
-                      <Linkedin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9CA3AF]" size={18} />
-                      <input
-                        type="url"
-                        value={applicationForm.linkedin}
-                        onChange={(e) => setApplicationForm({ ...applicationForm, linkedin: e.target.value })}
-                        className="w-full bg-[#111827] border border-[#374151] rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
-                        placeholder="https://linkedin.com/in/yourprofile"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#D1D5DB] mb-2">GitHub Profile</label>
-                    <div className="relative">
-                      <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9CA3AF]" size={18} />
-                      <input
-                        type="url"
-                        value={applicationForm.github}
-                        onChange={(e) => setApplicationForm({ ...applicationForm, github: e.target.value })}
-                        className="w-full bg-[#111827] border border-[#374151] rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
-                        placeholder="https://github.com/yourusername"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Cover Letter *</label>
-                  <textarea
-                    required
-                    value={applicationForm.coverLetter}
-                    onChange={(e) => setApplicationForm({ ...applicationForm, coverLetter: e.target.value })}
-                    rows="5"
-                    className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
-                    placeholder="Tell us about yourself, your experience, and why you're interested in this position..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Resume/CV *</label>
-                  <div className="space-y-4">
-                    <label className="block cursor-pointer">
-                      <div className="bg-[#111827] border-2 border-dashed border-[#374151] rounded-lg px-4 py-8 text-center hover:border-[#8B5CF6] transition">
-                        <Upload className="mx-auto mb-3 text-[#9CA3AF]" size={28} />
-                        <div className="text-[#D1D5DB] font-medium mb-1">Click to upload your resume</div>
-                        <div className="text-sm text-[#9CA3AF]">PDF, DOC, DOCX up to 5MB</div>
-                        <input
-                          type="file"
-                          className="hidden"
-                          accept=".pdf,.doc,.docx"
-                          onChange={handleFileUpload}
-                          required
-                        />
-                      </div>
-                    </label>
-
-                    {applicationForm.resumeName && (
-                      <div className="flex items-center justify-between bg-[#111827] rounded-lg px-4 py-3 border border-[#374151]">
-                        <div className="flex items-center gap-3">
-                          <FileText size={20} className="text-[#8B5CF6]" />
-                          <div>
-                            <div className="text-[#F9FAFB] font-medium">{applicationForm.resumeName}</div>
-                            <div className="text-sm text-[#9CA3AF]">Ready to submit</div>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setApplicationForm({ ...applicationForm, resume: null, resumeName: '' })}
-                          className="text-sm text-red-400 hover:text-red-300"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="pt-4">
-                  <button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#10B981] hover:from-[#7C3AED] hover:to-[#059669] text-white font-bold py-4 px-6 rounded-lg transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-                  >
-                    Submit Application
-                    <ArrowRight size={18} />
-                  </button>
-                  <p className="text-sm text-[#9CA3AF] text-center mt-3">
-                    By submitting, you agree to our privacy policy. We'll contact you within 5-7 business days.
-                  </p>
-                </div>
-              </form>
-            </div>
           </div>
         </section>
 
@@ -508,7 +523,10 @@ export default function CareersPage() {
               Don't see the perfect role? We're always looking for talented individuals.
             </p>
             <button
-              onClick={() => document.getElementById('apply-form').scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => {
+                setSelectedJob(null);
+                setShowApplicationModal(true);
+              }}
               className="bg-white text-[#8B5CF6] hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold text-lg transition shadow-lg hover:shadow-xl inline-flex items-center gap-2"
             >
               Submit General Application
@@ -534,7 +552,7 @@ export default function CareersPage() {
             </p>
 
             <button
-              onClick={() => navigate('/manager/dashboard')}
+              onClick={handleLoginClick}
               className="text-sm text-[#9CA3AF] hover:text-white transition flex items-center gap-2"
             >
               <ArrowRight size={14} />
@@ -543,6 +561,323 @@ export default function CareersPage() {
           </div>
         </div>
       </footer>
+
+      {/* ============= JOB DETAILS MODAL ============= */}
+      {showJobDetailsModal && viewJob && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40"
+            onClick={handleCloseModal}
+          ></div>
+
+          {/* Modal */}
+          <div className="fixed inset-0 flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div className="bg-[#1E293B] rounded-2xl border border-[#374151] w-full max-w-4xl max-h-[90vh] overflow-y-auto relative animate-slideIn">
+
+              {/* Close Button */}
+              <button
+                onClick={handleCloseModal}
+                className="absolute top-4 right-4 p-2 bg-[#111827] rounded-full text-[#9CA3AF] hover:text-white hover:bg-[#374151] transition z-10"
+              >
+                <X size={20} />
+              </button>
+
+              {/* Modal Header / Cover */}
+              <div className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] p-8 border-b border-[#374151]">
+                <div className="inline-flex items-center gap-2 bg-[rgba(16,185,129,0.2)] text-[#10B981] px-3 py-1 rounded-full text-sm font-semibold mb-3">
+                  {viewJob.jobType}
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">{viewJob.title}</h2>
+                <div className="flex flex-wrap gap-4 text-[#D1D5DB] text-sm mt-4">
+                  <span className="flex items-center gap-1.5"><Briefcase size={16} className="text-[#8B5CF6]" /> {viewJob.department}</span>
+                  <span className="flex items-center gap-1.5"><MapPin size={16} className="text-[#8B5CF6]" /> {viewJob.location}</span>
+                  <span className="flex items-center gap-1.5"><DollarSign size={16} className="text-[#8B5CF6]" /> {formatSalary(viewJob)}</span>
+                  <span className="flex items-center gap-1.5"><Clock size={16} className="text-[#8B5CF6]" /> {formatExperience(viewJob)}</span>
+                </div>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-8 space-y-8">
+
+                {/* Description */}
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <FileText size={20} className="text-[#8B5CF6]" />
+                    About the Role
+                  </h3>
+                  <p className="text-[#9CA3AF] leading-relaxed whitespace-pre-wrap">
+                    {viewJob.description}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Responsibilities */}
+                  {viewJob.responsibilities && (
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <CheckCircle size={20} className="text-[#8B5CF6]" />
+                        Key Responsibilities
+                      </h3>
+                      <ul className="space-y-3">
+                        {viewJob.responsibilities.split('\n').filter(r => r.trim()).map((res, idx) => (
+                          <li key={idx} className="flex items-start gap-3 text-[#D1D5DB]">
+                            <div className="w-1.5 h-1.5 bg-[#8B5CF6] rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="flex-1 leading-relaxed">{res.trim()}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Requirements */}
+                  {viewJob.requirements && (
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <Award size={20} className="text-[#8B5CF6]" />
+                        Requirements
+                      </h3>
+                      <ul className="space-y-3">
+                        {viewJob.requirements.split('\n').filter(r => r.trim()).map((req, idx) => (
+                          <li key={idx} className="flex items-start gap-3 text-[#D1D5DB]">
+                            <div className="w-1.5 h-1.5 bg-[#10B981] rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="flex-1 leading-relaxed">{req.trim()}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                {/* Skills (if available) */}
+                {viewJob.skills && (
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                      <Zap size={20} className="text-[#8B5CF6]" />
+                      Skills Required
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {viewJob.skills.split(',').map((skill, idx) => (
+                        <span key={idx} className="bg-[#1E293B] border border-[#374151] px-3 py-1.5 rounded-lg text-sm text-[#D1D5DB]">
+                          {skill.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Footer Action */}
+                <div className="pt-8 border-t border-[#374151] flex justify-end gap-4">
+                  <button
+                    onClick={handleCloseModal}
+                    className="px-6 py-3 rounded-lg text-[#9CA3AF] hover:text-white hover:bg-[#374151] transition font-medium"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => handleApplyClick(viewJob)}
+                    className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition flex items-center gap-2"
+                  >
+                    Apply Now
+                    <ArrowRight size={18} />
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ============= APPLICATION MODAL ============= */}
+      {showApplicationModal && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40"
+            onClick={handleCloseModal}
+          ></div>
+
+          {/* Modal */}
+          <div className="fixed inset-0 flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div className="bg-[#1E293B] rounded-2xl border border-[#374151] w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+              {/* Modal Header */}
+              <div className="sticky top-0 bg-[#1E293B] px-8 py-6 border-b border-[#374151] flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-[rgba(139,92,246,0.2)] rounded-lg flex items-center justify-center">
+                    <FileText size={24} className="text-[#8B5CF6]" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold">
+                      {selectedJob ? `Apply for: ${selectedJob.title}` : 'Apply for Position'}
+                    </h3>
+                    <p className="text-[#9CA3AF]">Fill out your application below</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleCloseModal}
+                  className="w-10 h-10 rounded-lg hover:bg-[#111827] flex items-center justify-center transition"
+                >
+                  <XIcon size={24} className="text-[#9CA3AF]" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-8">
+                <form onSubmit={handleSubmitApplication} className="space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Full Name *</label>
+                      <input
+                        type="text"
+                        required
+                        value={applicationForm.name}
+                        onChange={(e) => setApplicationForm({ ...applicationForm, name: e.target.value })}
+                        className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                        placeholder="John Doe"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Email Address *</label>
+                      <input
+                        type="email"
+                        required
+                        value={applicationForm.email}
+                        onChange={(e) => setApplicationForm({ ...applicationForm, email: e.target.value })}
+                        className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                        placeholder="john@example.com"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Phone Number</label>
+                      <input
+                        type="tel"
+                        value={applicationForm.phone}
+                        onChange={(e) => setApplicationForm({ ...applicationForm, phone: e.target.value })}
+                        className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                        placeholder="+1 (555) 123-4567"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Position *</label>
+                      <select
+                        required
+                        value={applicationForm.position}
+                        onChange={(e) => {
+                          const job = jobs.find(j => j.title === e.target.value);
+                          setSelectedJob(job);
+                          setApplicationForm({ ...applicationForm, position: e.target.value });
+                        }}
+                        className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                      >
+                        <option value="">Select a position</option>
+                        {jobs.map(job => (
+                          <option key={job.id} value={job.title}>{job.title}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-[#D1D5DB] mb-2">LinkedIn Profile</label>
+                      <div className="relative">
+                        <Linkedin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9CA3AF]" size={18} />
+                        <input
+                          type="url"
+                          value={applicationForm.linkedin}
+                          onChange={(e) => setApplicationForm({ ...applicationForm, linkedin: e.target.value })}
+                          className="w-full bg-[#111827] border border-[#374151] rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                          placeholder="https://linkedin.com/in/yourprofile"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-[#D1D5DB] mb-2">GitHub Profile</label>
+                      <div className="relative">
+                        <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9CA3AF]" size={18} />
+                        <input
+                          type="url"
+                          value={applicationForm.github}
+                          onChange={(e) => setApplicationForm({ ...applicationForm, github: e.target.value })}
+                          className="w-full bg-[#111827] border border-[#374151] rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                          placeholder="https://github.com/yourusername"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Cover Letter *</label>
+                    <textarea
+                      required
+                      value={applicationForm.coverLetter}
+                      onChange={(e) => setApplicationForm({ ...applicationForm, coverLetter: e.target.value })}
+                      rows="5"
+                      className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                      placeholder="Tell us about yourself, your experience, and why you're interested in this position..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Resume/CV *</label>
+                    <div className="space-y-4">
+                      <label className="block cursor-pointer">
+                        <div className="bg-[#111827] border-2 border-dashed border-[#374151] rounded-lg px-4 py-8 text-center hover:border-[#8B5CF6] transition">
+                          <Upload className="mx-auto mb-3 text-[#9CA3AF]" size={28} />
+                          <div className="text-[#D1D5DB] font-medium mb-1">Click to upload your resume</div>
+                          <div className="text-sm text-[#9CA3AF]">PDF, DOC, DOCX up to 5MB</div>
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept=".pdf,.doc,.docx"
+                            onChange={handleFileUpload}
+                            required
+                          />
+                        </div>
+                      </label>
+
+                      {applicationForm.resumeName && (
+                        <div className="flex items-center justify-between bg-[#111827] rounded-lg px-4 py-3 border border-[#374151]">
+                          <div className="flex items-center gap-3">
+                            <FileText size={20} className="text-[#8B5CF6]" />
+                            <div>
+                              <div className="text-[#F9FAFB] font-medium">{applicationForm.resumeName}</div>
+                              <div className="text-sm text-[#9CA3AF]">Ready to submit</div>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setApplicationForm({ ...applicationForm, resume: null, resumeName: '' })}
+                            className="text-sm text-red-400 hover:text-red-300"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="pt-4">
+                    <button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#10B981] hover:from-[#7C3AED] hover:to-[#059669] text-white font-bold py-4 px-6 rounded-lg transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                    >
+                      Submit Application
+                      <ArrowRight size={18} />
+                    </button>
+                    <p className="text-sm text-[#9CA3AF] text-center mt-3">
+                      By submitting, you agree to our privacy policy. We'll contact you within 5-7 business days.
+                    </p>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Add CSS for animation */}
       <style jsx>{`

@@ -451,7 +451,7 @@ const AdminAnalytics = () => {
             </p>
           </div>
           <div className="flex gap-3">
-            <select
+            {/* <select
               className={`px-4 py-2.5 ${inputBg} border ${inputBorder} ${textPrimary} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
@@ -460,7 +460,7 @@ const AdminAnalytics = () => {
               <option value="monthly">This Month</option>
               <option value="quarterly">This Quarter</option>
               <option value="yearly">This Year</option>
-            </select>
+            </select> */}
             <button onClick={handleExportPDF} className={`flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors`}>
               <FiDownload className="w-4 h-4" />
               Export Report
@@ -544,9 +544,9 @@ const AdminAnalytics = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Attendance Chart - Bar Chart */}
         <div className={`${cardBg} rounded-xl p-6 border ${cardBorder} shadow-sm`}>
+
           <div className="flex justify-between items-center mb-6">
             <h3 className={`text-lg font-semibold ${textPrimary}`}>Weekly Attendance</h3>
-            <button className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-600'} hover:underline`}>View Details</button>
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
@@ -588,7 +588,6 @@ const AdminAnalytics = () => {
         <div className={`${cardBg} rounded-xl p-6 border ${cardBorder} shadow-sm`}>
           <div className="flex justify-between items-center mb-6">
             <h3 className={`text-lg font-semibold ${textPrimary}`}>Department Distribution</h3>
-            <button className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-600'} hover:underline`}>View Details</button>
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
@@ -617,61 +616,6 @@ const AdminAnalytics = () => {
                 />
                 <Legend />
               </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      {/* Hiring Trends */}
-      <div className="grid grid-cols-1 gap-6 mb-8">
-        {/* Hiring Trends - Area Chart */}
-        <div className={`${cardBg} rounded-xl p-6 border ${cardBorder} shadow-sm`}>
-          <div className="flex justify-between items-center mb-6">
-            <h3 className={`text-lg font-semibold ${textPrimary}`}>Hiring Trends</h3>
-            <button className={`text-sm ${darkMode ? 'text-blue-400' : 'text-blue-600'} hover:underline`}>View Details</button>
-          </div>
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <AreaChart
-                data={hiringData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridColor} />
-                <XAxis
-                  dataKey="month"
-                  stroke={chartTheme.axisColor}
-                  tick={{ fill: chartTheme.textColor }}
-                />
-                <YAxis
-                  stroke={chartTheme.axisColor}
-                  tick={{ fill: chartTheme.textColor }}
-                />
-                <Tooltip
-                  content={<CustomTooltip />}
-                  contentStyle={{
-                    backgroundColor: colors.card,
-                    borderColor: colors.border,
-                    color: colors.text
-                  }}
-                />
-                <Legend />
-                <Area
-                  type="monotone"
-                  dataKey="hired"
-                  name="Hired"
-                  stroke={colors.success}
-                  fill={colors.success}
-                  fillOpacity={0.3}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="resigned"
-                  name="Resigned"
-                  stroke={colors.danger}
-                  fill={colors.danger}
-                  fillOpacity={0.3}
-                />
-              </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>

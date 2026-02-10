@@ -149,7 +149,8 @@ const AddEmployee = () => {
     return newErrors;
   };
 
-  const handleNext = () => {
+  const handleNext = (e) => {
+    if (e) e.preventDefault();
     const stepErrors = validateStep(activeStep);
     if (Object.keys(stepErrors).length === 0) {
       setActiveStep(prev => Math.min(prev + 1, totalSteps));
@@ -158,7 +159,8 @@ const AddEmployee = () => {
     }
   };
 
-  const handlePrev = () => {
+  const handlePrev = (e) => {
+    if (e) e.preventDefault();
     setActiveStep(prev => Math.max(prev - 1, 1));
   };
 
@@ -166,7 +168,7 @@ const AddEmployee = () => {
     e.preventDefault();
 
     // Prevent premature submission: If not on last step, go to next step
-    if (activeStep < totalSteps) {
+    if (activeStep !== totalSteps) {
       handleNext();
       return;
     }
@@ -431,7 +433,7 @@ const AddEmployee = () => {
                   <label className={`block text-sm font-medium ${theme.text.secondary} mb-2`}>
                     <span className="flex items-center gap-2">
                       <FiMail className="w-4 h-4 text-purple-400" />
-                      Personal Email
+                      Personal Email *
                     </span>
                   </label>
                   <input
@@ -471,7 +473,7 @@ const AddEmployee = () => {
                   <label className={`block text-sm font-medium ${theme.text.secondary} mb-2`}>
                     <span className="flex items-center gap-2">
                       <FiCalendar className="w-4 h-4 text-purple-400" />
-                      Date of Birth
+                      Date of Birth *
                     </span>
                   </label>
                   <input
@@ -486,7 +488,7 @@ const AddEmployee = () => {
                 {/* Gender */}
                 <div>
                   <label className={`block text-sm font-medium ${theme.text.secondary} mb-2`}>
-                    Gender
+                    Gender *
                   </label>
                   <select
                     name="gender"
@@ -539,7 +541,7 @@ const AddEmployee = () => {
                     className={`w-full px-4 py-3 ${theme.input.bg} border ${theme.input.border} rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 ${theme.input.text} transition-all`}
                     placeholder="EMP001"
                   />
-                  <p className="text-sm text-gray-500 mt-1">Auto-generated if left empty</p>
+
                 </div>
 
                 {/* Department */}

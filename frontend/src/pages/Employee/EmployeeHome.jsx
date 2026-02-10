@@ -68,6 +68,14 @@ import {
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
+// Helper for safe date string
+const getSafeDateStr = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const EmployeeDashboard = () => {
   // Theme state
 
@@ -262,7 +270,7 @@ const EmployeeDashboard = () => {
 
       // Check for today's attendance to set clock in/out state
       // Check for today's attendance to set clock in/out state
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = getSafeDateStr(new Date());
 
       const todayRecord = attendanceMap[todayStr];
       if (todayRecord) {
@@ -421,7 +429,7 @@ const EmployeeDashboard = () => {
 
   useEffect(() => {
     const calculateTodayHours = () => {
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = getSafeDateStr(new Date());
       const todayRecord = attendanceData[todayStr];
 
       if (todayRecord && todayRecord.rawMarkIn) {
@@ -514,8 +522,10 @@ const EmployeeDashboard = () => {
     });
   };
 
+
+
   const getAttendanceStatus = (date) => {
-    const dateStr = date.toISOString().split("T")[0];
+    const dateStr = getSafeDateStr(date);
     return (
       attendanceData[dateStr] || {
         status: "not-marked",
@@ -531,7 +541,7 @@ const EmployeeDashboard = () => {
   };
 
   const getHoliday = (date) => {
-    const dateStr = date.toISOString().split("T")[0];
+    const dateStr = getSafeDateStr(date);
     return holidayData[dateStr] || null;
   };
 

@@ -1,7 +1,7 @@
 import { ThemeWrapper } from '../contexts/ThemeContext';
 import React, { useState, useEffect } from "react";
 import Chatbot from "../components/Chatbot";
-import { Outlet, Link, useLocation, useNavigate } from "react-router-dom"; // Added useNavigate
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FiHome,
   FiUsers,
@@ -29,16 +29,21 @@ import {
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { HiOutlineOfficeBuilding } from "react-icons/hi";
 import { AiOutlineAudit } from "react-icons/ai";
+import { notificationService } from '../services/notificationService';
 
 const AdminLayout = ({ children, logout }) => {
   const location = useLocation();
-  const navigate = useNavigate(); // Added useNavigate
+  const navigate = useNavigate();
   const [userDropdown, setUserDropdown] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState({});
   const [darkMode, setDarkMode] = useState(true);
   const [user, setUser] = useState(null);
+
+  // Notification state
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // Fetch user info
   useEffect(() => {
@@ -144,16 +149,6 @@ const AdminLayout = ({ children, logout }) => {
       ]
     },
 
-    // Roles & Permissions Module
-    {
-      label: "Roles & Permissions",
-      icon: <FiShield />,
-      path: "/admin/roles",
-      subItems: [
-        { label: "Role List", path: "/admin/roles" },
-        { label: "Add Role", path: "/admin/roles/add" },
-      ]
-    },
 
     // Attendance Module
     {
@@ -226,34 +221,22 @@ const AdminLayout = ({ children, logout }) => {
     { label: "Settings", icon: <FiSettings />, path: "/admin/settings" },
   ];
 
-  const [notifications, setNotifications] = useState([]);
-  // Fetch notifications (extracted so other handlers can call it)
-  const fetchNotifications = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    try {
-      const res = await fetch("/api/notifications", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const mapped = data.slice(0, 5).map(n => {
-          const diff = Date.now() - new Date(n.createdAt).getTime();
-          const mins = Math.floor(diff / 60000);
-          let timeStr = "Just now";
-          if (mins > 0 && mins < 60) timeStr = `${mins} min ago`;
-          else if (mins >= 60 && mins < 1440) timeStr = `${Math.floor(mins / 60)} hr ago`;
-          else if (mins >= 1440) timeStr = `${Math.floor(mins / 1440)} day ago`;
+  // Helper for time formatting
+  const formatTimeAgo = (dateString) => {
+    const diff = Date.now() - new Date(dateString).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "Just now";
+    if (mins < 60) return `${mins} min ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours} hr ago`;
+    return `${Math.floor(hours / 24)} day ago`;
+  };
 
-          return {
-            id: n.id,
-            text: n.message || n.title,
-            time: timeStr,
-            unread: !n.isRead
-          };
-        });
-        setNotifications(mapped);
-      }
+  const fetchNotifications = async () => {
+    try {
+      const data = await notificationService.getAll();
+      setNotifications(data);
+      setUnreadCount(data.filter(n => !n.isRead).length);
     } catch (err) {
       console.error("Failed to fetch notifications", err);
     }
@@ -261,29 +244,46 @@ const AdminLayout = ({ children, logout }) => {
 
   useEffect(() => {
     fetchNotifications();
-    // Poll every 30 seconds to keep updated
-    const interval = setInterval(fetchNotifications, 30000);
+    // Poll every minute
+    const interval = setInterval(fetchNotifications, 60000);
     return () => clearInterval(interval);
-  }, [location.pathname]); // Update when navigating too
+  }, [location.pathname]);
 
-  // Toggle notifications panel and mark all as read when opening
+  const handleMarkRead = async (id) => {
+    try {
+      await notificationService.markRead(id);
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (err) {
+      console.error("Failed to mark read", err);
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    try {
+      await notificationService.markAllRead();
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+    } catch (err) {
+      console.error("Failed to mark all read", err);
+    }
+  };
+
+  const handleClearAll = async () => {
+    try {
+      await notificationService.clearAll();
+      setNotifications([]);
+      setUnreadCount(0);
+    } catch (err) {
+      console.error("Failed to clear notifications", err);
+    }
+  };
+
   const handleToggleNotifications = async () => {
     const opening = !notificationsOpen;
     setNotificationsOpen(opening);
-    if (opening) {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-      try {
-        // mark all as read on backend
-        await fetch('/api/notifications/read-all', {
-          method: 'PATCH',
-          headers: { Authorization: `Bearer ${token}` }
-        });
-      } catch (err) {
-        console.error('Failed to mark notifications read', err);
-      }
-      // Refresh local list
-      fetchNotifications();
+    if (opening && unreadCount > 0) {
+      await handleMarkAllRead();
     }
   };
 
@@ -586,24 +586,39 @@ const AdminLayout = ({ children, logout }) => {
                 className={`p-2 rounded-lg ${sidebarHoverBg} transition-colors relative`}
               >
                 <IoMdNotificationsOutline className={`w-5 h-5 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`} />
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-600 text-white text-xs rounded-full flex items-center justify-center">
-                  {notifications.filter(n => n.unread).length}
-                </span>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-600 text-white text-xs rounded-full flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
               </button>
 
               {notificationsOpen && (
                 <div className={`absolute right-0 mt-2 w-80 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-lg border ${sidebarBorder} py-2 z-50`}>
-                  <div className={`px-4 py-3 border-b ${sidebarBorder}`}>
+                  <div className={`px-4 py-3 border-b ${sidebarBorder} flex justify-between items-center`}>
                     <h3 className={`font-semibold ${sidebarText}`}>Notifications</h3>
+                    {notifications.length > 0 && (
+                      <button onClick={handleClearAll} className="text-xs text-red-400 hover:text-red-500">
+                        Clear All
+                      </button>
+                    )}
                   </div>
-                  {notifications.map(notif => (
-                    <div key={notif.id} className={`px-4 py-3 ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors ${notif.unread ? (darkMode ? 'bg-purple-600/10' : 'bg-purple-50') : ''}`}>
-                      <p className={`text-sm ${sidebarText}`}>{notif.text}</p>
-                      <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
-                        {notif.time}
-                      </p>
-                    </div>
-                  ))}
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.length > 0 ? (
+                      notifications.slice(0, 5).map(notif => (
+                        <div key={notif.id} className={`px-4 py-3 ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors ${!notif.isRead ? (darkMode ? 'bg-purple-600/10' : 'bg-purple-50') : ''}`}>
+                          <p className={`text-sm ${sidebarText}`}>{notif.message || notif.title}</p>
+                          <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
+                            {formatTimeAgo(notif.createdAt)}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-center text-sm text-gray-500">
+                        No notifications
+                      </div>
+                    )}
+                  </div>
                   <div className={`border-t ${sidebarBorder} px-4 py-3`}>
                     <Link
                       to="/admin/notifications"

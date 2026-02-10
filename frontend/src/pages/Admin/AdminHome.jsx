@@ -10,6 +10,7 @@ import {
   FiCheckCircle,
   FiAlertCircle,
   FiDownload,
+  FiClipboard,
   FiActivity,
   FiPieChart,
   FiBarChart2,
@@ -188,7 +189,7 @@ const AdminHome = () => {
           ]),
         ];
 
-        autoTable(pdf,{
+        autoTable(pdf, {
           head: [attendanceTableData[0]],
           body: attendanceTableData.slice(1),
           startY: yPosition,
@@ -227,7 +228,7 @@ const AdminHome = () => {
           ...charts.leaves.map((l) => [l.type || "N/A", String(l.count || 0)]),
         ];
 
-        autoTable(pdf,{
+        autoTable(pdf, {
           head: [leaveTableData[0]],
           body: leaveTableData.slice(1),
           startY: yPosition,
@@ -338,8 +339,8 @@ const AdminHome = () => {
         console.error("Failed to load admin dashboard:", err);
         setError(
           err.response?.data?.message ||
-            err.message ||
-            "Failed to load dashboard",
+          err.message ||
+          "Failed to load dashboard",
         );
       } finally {
         setLoading(false);
@@ -434,12 +435,12 @@ const AdminHome = () => {
     productivity: 90, // placeholder
     employees: d.count || 0,
   })) || [
-    { name: "IT", attendance: 97, productivity: 92, employees: 35 },
-    { name: "HR", attendance: 95, productivity: 88, employees: 20 },
-    { name: "Finance", attendance: 96, productivity: 90, employees: 18 },
-    { name: "Marketing", attendance: 94, productivity: 85, employees: 15 },
-    { name: "Operations", attendance: 93, productivity: 87, employees: 12 },
-  ];
+      { name: "IT", attendance: 97, productivity: 92, employees: 35 },
+      { name: "HR", attendance: 95, productivity: 88, employees: 20 },
+      { name: "Finance", attendance: 96, productivity: 90, employees: 18 },
+      { name: "Marketing", attendance: 94, productivity: 85, employees: 15 },
+      { name: "Operations", attendance: 93, productivity: 87, employees: 12 },
+    ];
 
   // Attendance trend data for line chart (mapped from monthly attendance)
   const attendanceTrendData = charts?.attendance?.map((r) => ({
@@ -447,14 +448,14 @@ const AdminHome = () => {
     present: Number(r.count),
     late: 0,
   })) || [
-    { day: "Mon", present: 95, late: 8 },
-    { day: "Tue", present: 96, late: 6 },
-    { day: "Wed", present: 97, late: 5 },
-    { day: "Thu", present: 94, late: 10 },
-    { day: "Fri", present: 98, late: 4 },
-    { day: "Sat", present: 30, late: 2 },
-    { day: "Sun", present: 20, late: 1 },
-  ];
+      { day: "Mon", present: 95, late: 8 },
+      { day: "Tue", present: 96, late: 6 },
+      { day: "Wed", present: 97, late: 5 },
+      { day: "Thu", present: 94, late: 10 },
+      { day: "Fri", present: 98, late: 4 },
+      { day: "Sat", present: 30, late: 2 },
+      { day: "Sun", present: 20, late: 1 },
+    ];
 
   // Employee distribution data for pie chart (derived from departments counts)
   const employeeDistributionData = charts?.departments?.map((d, i) => ({
@@ -468,11 +469,11 @@ const AdminHome = () => {
       "#EC4899",
     ][i % 5],
   })) || [
-    { name: "Full-time", value: 120, color: colors.primary }, // Purple
-    { name: "Part-time", value: 18, color: "#10B981" }, // Emerald
-    { name: "Contract", value: 8, color: "#F59E0B" }, // Amber
-    { name: "Interns", value: 4, color: "#3B82F6" }, // Blue
-  ];
+      { name: "Full-time", value: 120, color: colors.primary }, // Purple
+      { name: "Part-time", value: 18, color: "#10B981" }, // Emerald
+      { name: "Contract", value: 8, color: "#F59E0B" }, // Amber
+      { name: "Interns", value: 4, color: "#3B82F6" }, // Blue
+    ];
 
   // Leave statistics data (summary from charts + dashboard)
   const totalLeavesThisYear = charts?.leaves
@@ -480,28 +481,28 @@ const AdminHome = () => {
     : null;
   const leaveData = charts?.leaves
     ? [
-        {
-          type: "Approved (year)",
-          count: totalLeavesThisYear || 0,
-          color: colors.primary,
-        },
-        {
-          type: "Pending",
-          count: dashboard ? dashboard.pendingLeaves : 0,
-          color: "#10B981",
-        },
-        {
-          type: "On Leave Today",
-          count: dashboard ? dashboard.onLeaveToday : 0,
-          color: "#F59E0B",
-        },
-      ]
+      {
+        type: "Approved (year)",
+        count: totalLeavesThisYear || 0,
+        color: colors.primary,
+      },
+      {
+        type: "Pending",
+        count: dashboard ? dashboard.pendingLeaves : 0,
+        color: "#10B981",
+      },
+      {
+        type: "On Leave Today",
+        count: dashboard ? dashboard.onLeaveToday : 0,
+        color: "#F59E0B",
+      },
+    ]
     : [
-        { type: "Sick Leave", count: 24, color: colors.primary }, // Purple
-        { type: "Casual Leave", count: 18, color: "#10B981" }, // Emerald
-        { type: "Earned Leave", count: 32, color: "#F59E0B" }, // Amber
-        { type: "Maternity", count: 3, color: "#3B82F6" }, // Blue
-      ];
+      { type: "Sick Leave", count: 24, color: colors.primary }, // Purple
+      { type: "Casual Leave", count: 18, color: "#10B981" }, // Emerald
+      { type: "Earned Leave", count: 32, color: "#F59E0B" }, // Amber
+      { type: "Maternity", count: 3, color: "#3B82F6" }, // Blue
+    ];
 
   const attendanceRate =
     dashboard && dashboard.totalEmployees
@@ -525,55 +526,55 @@ const AdminHome = () => {
     time: w.date || "",
     status: "success",
   })) || [
-    {
-      user: "Rahul Sharma",
-      action: "checked in",
-      time: "9:15 AM",
-      status: "success",
-    },
-    {
-      user: "Priya Patel",
-      action: "applied for leave",
-      time: "10:30 AM",
-      status: "warning",
-    },
-    {
-      user: "Simran Kaur",
-      action: "approved leave",
-      time: "11:45 AM",
-      status: "success",
-    },
-    {
-      user: "Ankit Mehta",
-      action: "submitted report",
-      time: "1:20 PM",
-      status: "success",
-    },
-    {
-      user: "System",
-      action: "backup completed",
-      time: "2:00 AM",
-      status: "info",
-    },
-    {
-      user: "Ravi Kumar",
-      action: "updated profile",
-      time: "3:45 PM",
-      status: "success",
-    },
-    {
-      user: "Sneha Verma",
-      action: "requested equipment",
-      time: "4:20 PM",
-      status: "warning",
-    },
-    {
-      user: "Vikram Singh",
-      action: "completed training",
-      time: "5:00 PM",
-      status: "success",
-    },
-  ];
+      {
+        user: "Rahul Sharma",
+        action: "checked in",
+        time: "9:15 AM",
+        status: "success",
+      },
+      {
+        user: "Priya Patel",
+        action: "applied for leave",
+        time: "10:30 AM",
+        status: "warning",
+      },
+      {
+        user: "Simran Kaur",
+        action: "approved leave",
+        time: "11:45 AM",
+        status: "success",
+      },
+      {
+        user: "Ankit Mehta",
+        action: "submitted report",
+        time: "1:20 PM",
+        status: "success",
+      },
+      {
+        user: "System",
+        action: "backup completed",
+        time: "2:00 AM",
+        status: "info",
+      },
+      {
+        user: "Ravi Kumar",
+        action: "updated profile",
+        time: "3:45 PM",
+        status: "success",
+      },
+      {
+        user: "Sneha Verma",
+        action: "requested equipment",
+        time: "4:20 PM",
+        status: "warning",
+      },
+      {
+        user: "Vikram Singh",
+        action: "completed training",
+        time: "5:00 PM",
+        status: "success",
+      },
+    ];
 
   // Custom tooltip for charts
   const CustomTooltip = ({ active, payload, label }) => {
@@ -685,13 +686,7 @@ const AdminHome = () => {
             </p>
           </div>
           <div className="flex gap-3">
-            <select
-              className={`px-4 py-2.5 ${theme.input.bg} border ${theme.input.border} ${theme.input.text} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
-            >
-              <option>Today</option>
-              <option>This Week</option>
-              <option>This Month</option>
-            </select>
+
             <button
               onClick={handleExportPDF}
               className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
@@ -718,13 +713,12 @@ const AdminHome = () => {
                 <div className="flex items-center gap-1">
                   {getTrendIcon(stat.trend)}
                   <span
-                    className={`text-sm font-medium ${
-                      stat.trend === "up"
+                    className={`text-sm font-medium ${stat.trend === "up"
                         ? "text-emerald-500 dark:text-emerald-400"
                         : stat.trend === "down"
                           ? "text-rose-500 dark:text-rose-400"
                           : theme.text.muted
-                    }`}
+                      }`}
                   >
                     {stat.change}
                   </span>
@@ -749,13 +743,7 @@ const AdminHome = () => {
             <h2 className={`text-lg font-semibold ${theme.text.primary}`}>
               Department Performance
             </h2>
-            <button
-              type="button"
-              onClick={() => navigate("/admin/departments")}
-              className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
-            >
-              View Details
-            </button>
+
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -803,13 +791,7 @@ const AdminHome = () => {
             <h2 className={`text-lg font-semibold ${theme.text.primary}`}>
               Monthly Attendance Trends
             </h2>
-            <button
-              type="button"
-              onClick={() => navigate("/admin/attendance")}
-              className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
-            >
-              View Details
-            </button>
+
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -857,13 +839,7 @@ const AdminHome = () => {
             <h2 className={`text-lg font-semibold ${theme.text.primary}`}>
               Employee Distribution
             </h2>
-            <button
-              type="button"
-              onClick={() => navigate("/admin/employees/distribution")}
-              className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
-            >
-              View Details
-            </button>
+
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -901,13 +877,7 @@ const AdminHome = () => {
             <h2 className={`text-lg font-semibold ${theme.text.primary}`}>
               Leave Statistics
             </h2>
-            <button
-              type="button"
-              onClick={() => navigate("/admin/leaves")}
-              className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
-            >
-              View Details
-            </button>
+
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -1109,7 +1079,7 @@ const AdminHome = () => {
               <div
                 className={`w-10 h-10 rounded-lg ${darkMode ? "bg-amber-500/20" : "bg-amber-100"} flex items-center justify-center text-amber-600 dark:text-amber-400 mb-2`}
               >
-                <FiTrendingUp className="w-5 h-5" />
+                <FiClipboard className="w-5 h-5" />
               </div>
               <span className={`text-sm font-medium ${theme.text.primary}`}>
                 View Reports
@@ -1155,53 +1125,53 @@ const AdminHome = () => {
                     {getStatusIcon(activity.status)}
                   </div>
                 </div>
-                  {/* All Activities Modal (in-page) */}
-                  {showAllActivities && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center">
-                      <div
-                        className="absolute inset-0 bg-black opacity-50"
-                        onClick={() => setShowAllActivities(false)}
-                      />
-                      <div className={`relative w-11/12 max-w-3xl ${theme.bg.secondary} rounded-lg p-6 border ${theme.border.primary} shadow-lg z-10`}>
-                        <div className="flex justify-between items-center mb-4">
-                          <h3 className={`text-lg font-semibold ${theme.text.primary}`}>All Activities</h3>
-                          <button
-                            type="button"
-                            onClick={() => setShowAllActivities(false)}
-                            className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
-                          >
-                            Close
-                          </button>
-                        </div>
+                {/* All Activities Modal (in-page) */}
+                {showAllActivities && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div
+                      className="absolute inset-0 bg-black opacity-50"
+                      onClick={() => setShowAllActivities(false)}
+                    />
+                    <div className={`relative w-11/12 max-w-3xl ${theme.bg.secondary} rounded-lg p-6 border ${theme.border.primary} shadow-lg z-10`}>
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className={`text-lg font-semibold ${theme.text.primary}`}>All Activities</h3>
+                        <button
+                          type="button"
+                          onClick={() => setShowAllActivities(false)}
+                          className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
+                        >
+                          Close
+                        </button>
+                      </div>
 
-                        <div className="max-h-80 overflow-auto space-y-3">
-                          {(dashboard?.recentWorklogs && dashboard.recentWorklogs.length > 0
-                            ? dashboard.recentWorklogs
-                            : recentActivities
-                          ).map((w, i) => (
-                            <div
-                              key={i}
-                              className={`p-3 rounded-lg border ${theme.border.primary} ${darkMode ? "bg-gray-900/50" : "bg-white"}`}
-                            >
-                              <div className="flex justify-between">
-                                <div>
-                                  <div className={`font-medium ${theme.text.primary}`}>
-                                    {w.employee?.fullName || w.user || "Unknown"}
-                                  </div>
-                                  <div className={`text-sm ${theme.text.secondary}`}>
-                                    {w.description || w.action || "Activity"}
-                                  </div>
+                      <div className="max-h-80 overflow-auto space-y-3">
+                        {(dashboard?.recentWorklogs && dashboard.recentWorklogs.length > 0
+                          ? dashboard.recentWorklogs
+                          : recentActivities
+                        ).map((w, i) => (
+                          <div
+                            key={i}
+                            className={`p-3 rounded-lg border ${theme.border.primary} ${darkMode ? "bg-gray-900/50" : "bg-white"}`}
+                          >
+                            <div className="flex justify-between">
+                              <div>
+                                <div className={`font-medium ${theme.text.primary}`}>
+                                  {w.employee?.fullName || w.user || "Unknown"}
                                 </div>
-                                <div className="text-xs text-gray-500">
-                                  {w.date || w.time || "-"}
+                                <div className={`text-sm ${theme.text.secondary}`}>
+                                  {w.description || w.action || "Activity"}
                                 </div>
                               </div>
+                              <div className="text-xs text-gray-500">
+                                {w.date || w.time || "-"}
+                              </div>
                             </div>
-                          ))}
-                        </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  )}
+                  </div>
+                )}
                 <div>
                   <p className={`font-medium ${theme.text.primary}`}>
                     {activity.user}
@@ -1220,13 +1190,12 @@ const AdminHome = () => {
                   <span>{activity.time}</span>
                 </div>
                 <div
-                  className={`text-xs px-2 py-1 rounded-full ${
-                    activity.status === "success"
+                  className={`text-xs px-2 py-1 rounded-full ${activity.status === "success"
                       ? `${darkMode ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-100 text-emerald-700"}`
                       : activity.status === "warning"
                         ? `${darkMode ? "bg-amber-500/20 text-amber-400" : "bg-amber-100 text-amber-700"}`
                         : `${darkMode ? "bg-purple-500/20 text-purple-400" : "bg-purple-100 text-purple-700"}`
-                  }`}
+                    }`}
                 >
                   {activity.status}
                 </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import {
@@ -17,8 +17,7 @@ import {
 const UploadDocument = () => {
   const navigate = useNavigate();
 
-  // const { isDarkMode } = useTheme();
-  const isDarkMode = false; // replace with real theme state
+  const { isDarkMode } = useOutletContext() || {};
 
   const themeColors = isDarkMode
     ? {

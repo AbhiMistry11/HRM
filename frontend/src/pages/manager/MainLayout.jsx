@@ -186,58 +186,39 @@ export default function MainLayout({ logout }) {
     },
     {
       id: 'employees',
-      title: 'Employee Management',
-      hasDropdown: true,
+      title: 'Employee List',
+      hasDropdown: false,
       icon: <Users size={20} />,
       items: [
         {
           id: 'employee-list',
           label: 'Employee List',
-          icon: <Users size={16} />,
+          icon: <Users size={20} />,
           path: '/manager/employees'
         },
       ]
     },
-    {
-      id: 'departments',
-      title: 'Department Management',
-      hasDropdown: true,
-      icon: <Building size={20} />,
-      items: [
-        {
-          id: 'department-list',
-          label: 'Department List',
-          icon: <Building size={16} />,
-          path: '/manager/departments'
-        },
-        {
-          id: 'add-department',
-          label: 'Add Department',
-          icon: <Building size={16} />,
-          path: '/manager/departments/add'
-        },
-      ]
-    },
-    {
-      id: 'roles',
-      title: 'Roles & Permissions',
-      hasDropdown: true,
-      icon: <Shield size={20} />,
-      items: [
-        {
-          id: 'role-list',
-          label: 'Role List',
-          icon: <Shield size={16} />,
-          path: '/manager/roles'
-        },
-        {
-          id: 'add-role',
-          label: 'Add Role',
-          icon: <Shield size={16} />,
-          path: '/manager/roles/add'
-        },
-      ]
-    },
+
+    // {
+    //   id: 'roles',
+    //   title: 'Roles & Permissions',
+    //   hasDropdown: true,
+    //   icon: <Shield size={20} />,
+    //   items: [
+    //     {
+    //       id: 'role-list',
+    //       label: 'Role List',
+    //       icon: <Shield size={16} />,
+    //       path: '/manager/roles'
+    //     },
+    //     {
+    //       id: 'add-role',
+    //       label: 'Add Role',
+    //       icon: <Shield size={16} />,
+    //       path: '/manager/roles/add'
+    //     },
+    //   ]
+    // },
     {
       id: 'tasks',
       title: 'Task Management',
@@ -263,6 +244,26 @@ export default function MainLayout({ logout }) {
           label: 'Monthly Attendance',
           icon: <Calendar size={16} />,
           path: '/manager/attendance'
+        },
+      ]
+    },
+    {
+      id: 'departments',
+      title: 'Department Management',
+      hasDropdown: true,
+      icon: <Building size={20} />,
+      items: [
+        {
+          id: 'department-list',
+          label: 'Department List',
+          icon: <Building size={16} />,
+          path: '/manager/departments'
+        },
+        {
+          id: 'add-department',
+          label: 'Add Department',
+          icon: <Building size={16} />,
+          path: '/manager/departments/add'
         },
       ]
     },
@@ -522,7 +523,7 @@ export default function MainLayout({ logout }) {
           </div>
 
           <div className="flex items-center gap-3">
-            <form onSubmit={handleSearch} className="relative hidden md:block">
+            {/* <form onSubmit={handleSearch} className="relative hidden md:block">
               <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${darkMode ? 'text-gray-500' : 'text-slate-400'
                 }`} size={18} />
               <input
@@ -535,7 +536,7 @@ export default function MainLayout({ logout }) {
                   : 'bg-white border-slate-300 text-slate-700 placeholder-slate-400'
                   }`}
               />
-            </form>
+            </form> */}
 
             {/* Dark Mode Toggle Button */}
             <button

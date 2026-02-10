@@ -179,12 +179,12 @@ const RoleList = () => {
                             />
                         </div>
                     </div>
-                    <div className="flex gap-3">
+                    {/* <div className="flex gap-3">
                         <button className={`flex items-center gap-2 px-4 py-3 ${themeClasses.input.bg} border ${themeClasses.input.border} rounded-lg hover:border-purple-500 ${themeClasses.text.secondary} hover:${themeClasses.text.primary} transition-colors`}>
                             <FiFilter className="w-4 h-4" />
                             <span>Filter</span>
                         </button>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Batch Actions */}

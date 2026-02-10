@@ -62,7 +62,7 @@ const EmployeeManagement = () => {
         original: item,
         // Additional details for modal
         designation: item.employee?.designation || 'N/A',
-        joiningDate: item.employee?.joiningDate || 'N/A',
+        joiningDate: item.employee?.dateOfJoining || 'N/A',
         address: item.employee?.address || 'N/A'
       }));
       setEmployees(formatted);
@@ -383,8 +383,13 @@ const ModalTabs = ({ employee, themeColors, isDarkMode }) => {
           else if (status === 'ABSENT') stats.absent++;
           else if (status === 'HALF_DAY') { stats.present += 0.5; stats.absent += 0.5; }
 
-          if (record.overtimeHours > 0) stats.overtime += record.overtimeHours;
-          if (record.checkOutTime && record.shiftEndTime && new Date(record.checkOutTime) < new Date(record.shiftEndTime)) stats.earlyExit++;
+          // Overtime and Early Exit require fields not currently in Attendance model (markOut is present, but shiftEndTime/overtimeHours are not)
+          // We will use markOut if available to check for early exit IF we had shift end time. 
+          // For now, we'll zero these out or leave simple logic if possible.
+          // Since we don't have shift info here, we can't calculate early exit/overtime accurately.
+
+          // stats.overtime += 0; 
+          // stats.earlyExit += 0;
         });
       }
       setAttendanceStats(stats);
@@ -399,7 +404,7 @@ const ModalTabs = ({ employee, themeColors, isDarkMode }) => {
     { id: 'overview', label: 'Overview', icon: User },
     { id: 'attendance', label: 'Attendance', icon: Calendar },
     { id: 'leaves', label: 'Leaves', icon: Briefcase },
-    { id: 'performance', label: 'Performance', icon: MoreVertical },
+
   ];
 
   return (

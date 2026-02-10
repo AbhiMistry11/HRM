@@ -3,6 +3,7 @@ import {
   LeaveRequest,
   LeaveType,
   EmployeeLeaveBalance,
+  User,
 } from "../models/index.js";
 import { Op } from "sequelize";
 import { createNotification } from "./notification.service.js";
@@ -138,6 +139,17 @@ export const applyLeaveService = async (employeeId, data) => {
     for (const manager of managers) {
       await createNotification({
         userId: manager.userId,
+        title: "New Leave Request",
+        message: `${employee.fullName} applied for leave`,
+        type: "LEAVE",
+      });
+    }
+
+    // 🔔 Notify Admins
+    const admins = await User.findAll({ where: { role: 'ADMIN' } });
+    for (const admin of admins) {
+      await createNotification({
+        userId: admin.id,
         title: "New Leave Request",
         message: `${employee.fullName} applied for leave`,
         type: "LEAVE",

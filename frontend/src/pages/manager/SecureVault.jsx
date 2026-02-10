@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import {
   Search,
   Plus,
@@ -16,8 +16,7 @@ import { toast } from "react-hot-toast";
 // import { useTheme } from "@/context/ThemeContext"; // adjust if needed
 
 export default function SecureVault() {
-  // const { isDarkMode } = useTheme();
-  const isDarkMode = false; // replace with real theme state
+  const { isDarkMode } = useOutletContext() || {};
 
   const themeColors = isDarkMode
     ? {
