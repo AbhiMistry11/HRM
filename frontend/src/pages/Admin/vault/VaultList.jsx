@@ -381,7 +381,7 @@ const VaultList = () => {
       </div>
 
       {/* Vault Security Info */}
-      <div className={`mt-6 ${darkMode ? 'bg-purple-900/20' : 'bg-purple-50'} rounded-xl p-6 border ${darkMode ? 'border-purple-500/30' : 'border-purple-200'}`}>
+      {/* <div className={`mt-6 ${darkMode ? 'bg-purple-900/20' : 'bg-purple-50'} rounded-xl p-6 border ${darkMode ? 'border-purple-500/30' : 'border-purple-200'}`}>
         <div className="flex items-start gap-4">
           <div className={`w-12 h-12 rounded-full ${darkMode ? 'bg-purple-500/20' : 'bg-purple-100'} flex items-center justify-center`}>
             <FiLock className={`w-6 h-6 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
@@ -405,7 +405,7 @@ const VaultList = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

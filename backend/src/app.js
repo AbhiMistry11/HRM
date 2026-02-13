@@ -30,6 +30,7 @@ import payslipRoutes from "./routes/payslip.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
 import roleRoutes from "./routes/role.routes.js";
 import resetPasswordRoutes from "./routes/resetPassword.routes.js";
+import path from "path";
 
 
 const app = express();
@@ -37,7 +38,9 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public")); // Serve static files from public directory
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, "public"))); // Serve static files from public directory
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads"))); // Explicitly serve uploads
 
 // Routes
 app.use("/api/auth", authRoutes);

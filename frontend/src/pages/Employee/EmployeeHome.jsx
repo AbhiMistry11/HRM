@@ -116,6 +116,7 @@ const EmployeeDashboard = () => {
     from: "",
     to: "",
     reason: "",
+    contact: "",
   });
 
   const [newWorklog, setNewWorklog] = useState({
@@ -1015,7 +1016,7 @@ const EmployeeDashboard = () => {
               { label: "Email", value: user?.email || "N/A" },
               { label: "Phone", value: userData.phone || "N/A" },
               { label: "Location", value: userData.location || "N/A" },
-              { label: "Join Date", value: userData.joiningDate ? new Date(userData.joiningDate).toLocaleDateString() : "N/A" },
+              { label: "Join Date", value: userData.dateOfJoining ? new Date(userData.dateOfJoining).toLocaleDateString() : "N/A" },
             ].map((item, index) => (
               <div key={index}>
                 <label
@@ -2132,21 +2133,23 @@ const EmployeeDashboard = () => {
             }}
           />
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-          {['all', 'Employment', 'Payroll', 'Legal', 'HR', 'Verification', 'Personal'].map(category => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === category
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              style={selectedCategory === category ? { backgroundColor: themeColors.primary } : {}}
-            >
-              {category === 'all' ? 'All Categories' : category}
-            </button>
-          ))}
-
+        <div className="w-full md:w-64">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full px-4 py-2 rounded-lg border text-sm font-medium focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+            style={{
+              backgroundColor: themeColors.cardBackground,
+              borderColor: themeColors.borderDivider,
+              color: themeColors.textPrimary
+            }}
+          >
+            {['all', 'Employment', 'Payroll', 'Legal', 'HR', 'Verification', 'Personal'].map(category => (
+              <option key={category} value={category}>
+                {category === 'all' ? 'All Categories' : category}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -3622,17 +3625,25 @@ const EmployeeDashboard = () => {
                       className="block text-sm font-medium mb-1"
                       style={{ color: themeColors.textSecondary }}
                     >
-                      Contact During Leave
+                      Contact During Leave *
                     </label>
                     <input
                       type="tel"
+                      required
+                      value={newLeave.contact}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        setNewLeave({ ...newLeave, contact: val });
+                      }}
+                      pattern="\d{10}"
+                      title="Please enter exactly 10 digits"
                       className="w-full p-2 rounded border text-sm hover:scale-105 transition-transform"
                       style={{
                         backgroundColor: themeColors.cardBackground,
                         borderColor: themeColors.borderDivider,
                         color: themeColors.textPrimary,
                       }}
-                      placeholder="Phone number"
+                      placeholder="Phone number (10 digits)"
                     />
                   </div>
                 </div>

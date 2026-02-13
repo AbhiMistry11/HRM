@@ -87,13 +87,18 @@ const AttendanceReports = () => {
 
   const COLORS = ['#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6'];
 
-  const generateReport = async () => {
+  const generateReport = async (customDates = null) => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
+
+      // Use custom dates if provided, otherwise use state
+      const start = customDates ? customDates.start : dateRange.start;
+      const end = customDates ? customDates.end : dateRange.end;
+
       const query = new URLSearchParams({
-        start: dateRange.start,
-        end: dateRange.end,
+        start,
+        end,
         department: departmentFilter
       }).toString();
 
@@ -118,6 +123,36 @@ const AttendanceReports = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleQuickReport = (type) => {
+    setReportType(type);
+    const today = new Date();
+    let start = new Date();
+    let end = new Date();
+
+    if (type === 'daily') {
+      // Start and end are today
+      start = today;
+      end = today;
+    } else if (type === 'weekly') {
+      // Last 7 days
+      start = new Date(today);
+      start.setDate(today.getDate() - 7);
+      end = today;
+    } else if (type === 'monthly') {
+      // Start of current month
+      start = new Date(today.getFullYear(), today.getMonth(), 1);
+      end = today;
+    }
+
+    const newDates = {
+      start: start.toISOString().split('T')[0],
+      end: end.toISOString().split('T')[0]
+    };
+
+    setDateRange(newDates);
+    generateReport(newDates);
   };
 
   const exportReport = async (format) => {
@@ -150,7 +185,7 @@ const AttendanceReports = () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `attendance_report_${dateRange.start}_to_${dateRange.end}.${format === 'excel' ? 'csv' : 'csv'}`;
+        a.download = `attendance_report_${dateRange.start}_to_${dateRange.end}.${format === 'excel' ? 'csv' : 'csv'}`; // Backend only does CSV for now
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -212,14 +247,14 @@ const AttendanceReports = () => {
             </label>
             <select
               value={reportType}
-              onChange={(e) => setReportType(e.target.value)}
+              onChange={(e) => handleQuickReport(e.target.value)}
               className={`w-full px-4 py-3 ${themeClasses.input.bg} border ${themeClasses.input.border} ${themeClasses.input.text} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500`}
             >
               <option value="daily" className={darkMode ? 'bg-gray-900' : 'bg-white'}>Daily Report</option>
               <option value="weekly" className={darkMode ? 'bg-gray-900' : 'bg-white'}>Weekly Summary</option>
               <option value="monthly" className={darkMode ? 'bg-gray-900' : 'bg-white'}>Monthly Report</option>
-              <option value="quarterly" className={darkMode ? 'bg-gray-900' : 'bg-white'}>Quarterly Analysis</option>
-              <option value="yearly" className={darkMode ? 'bg-gray-900' : 'bg-white'}>Yearly Overview</option>
+              {/* <option value="quarterly" className={darkMode ? 'bg-gray-900' : 'bg-white'}>Quarterly Analysis</option>
+              <option value="yearly" className={darkMode ? 'bg-gray-900' : 'bg-white'}>Yearly Overview</option> */}
             </select>
           </div>
 
@@ -674,7 +709,7 @@ const AttendanceReports = () => {
           ].map((report, index) => (
             <button
               key={index}
-              onClick={() => report.action ? exportReport("excel") : setReportType(report.type)}
+              onClick={() => report.action ? exportReport("excel") : handleQuickReport(report.type)}
               className={`p-4 rounded-lg border ${themeClasses.border.primary} ${themeClasses.bg.tertiary} hover:${darkMode ? 'bg-gray-800' : 'bg-gray-200'} transition-colors text-left`}
             >
               <div className="flex items-center gap-3">

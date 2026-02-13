@@ -72,7 +72,7 @@ export const meController = async (req, res) => {
 export const updateMeController = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, email, phone, department, position, joiningDate } = req.body;
+    const { name, email, phone, department, position, joiningDate, profileImage } = req.body;
 
     const user = await User.findByPk(userId, {
       include: [{ model: Employee, as: "employeeProfile" }],
@@ -97,6 +97,7 @@ export const updateMeController = async (req, res) => {
       if (department) emp.department = department; // Note: Usually dept is managed by Admin, but allowing edit for now as per UI
       if (position) emp.designation = position;
       if (joiningDate) emp.dateOfJoining = joiningDate;
+      if (profileImage) emp.profileImage = profileImage;
 
       await emp.save();
     }
@@ -137,5 +138,26 @@ export const resetPasswordController = async (req, res) => {
   } catch (err) {
     console.error("Reset password error:", err.message);
     res.status(400).json({ message: err.message || "Failed to reset password" });
+  }
+};
+
+export const uploadProfileImageController = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    // Construct full URL
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const imageUrl = `${baseUrl}/uploads/vault/${req.file.filename}`;
+
+    res.json({
+      success: true,
+      message: "Image uploaded successfully",
+      imageUrl: imageUrl
+    });
+  } catch (err) {
+    console.error("Profile upload error:", err);
+    res.status(500).json({ message: "Failed to upload image" });
   }
 };

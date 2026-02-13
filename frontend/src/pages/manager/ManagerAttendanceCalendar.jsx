@@ -50,39 +50,43 @@ const ManagerAttendanceCalendar = () => {
 
   useEffect(() => {
     fetchAttendanceData();
-  }, [currentDate, selectedDepartment]);
+  }, [currentDate]); // Removed selectedDepartment from dep array as we filter client-side
 
   const fetchAttendanceData = async () => {
     setLoading(true);
     try {
-      // In a real app, you would fetch data for the specific month/year
-      // const data = await managerService.getDepartmentAttendance(currentDate.getMonth() + 1, currentDate.getFullYear());
-      // For now, using mock data structure based on the requirements
+      const month = currentDate.getMonth() + 1;
+      const year = currentDate.getFullYear();
+      const response = await managerService.getTeamMonthlyAttendance(month, year);
 
-      const mockData = [
-        { id: 1, name: 'John Doe', department: 'Engineering', attendance: generateMonthAttendance() },
-        { id: 2, name: 'Jane Smith', department: 'Marketing', attendance: generateMonthAttendance() },
-        { id: 3, name: 'Mike Johnson', department: 'Engineering', attendance: generateMonthAttendance() },
-        { id: 4, name: 'Sarah Williams', department: 'HR', attendance: generateMonthAttendance() },
-        { id: 5, name: 'David Brown', department: 'Sales', attendance: generateMonthAttendance() },
-      ];
+      // Transform mock data structure to match frontend needs
+      // Backend returns: 
+      // [{ id, fullName, department, attendance: [{ date: 'YYYY-MM-DD', status: 'PRESENT' }] }]
 
-      setAttendanceData(mockData);
+      const formattedData = response.map(emp => ({
+        id: emp.id,
+        name: emp.fullName,
+        department: emp.department || 'N/A',
+        attendance: emp.attendance.map(record => ({
+          date: new Date(record.date).getDate(), // Extract day number
+          status: (record.status || 'absent').toLowerCase()
+        }))
+      }));
+
+      setAttendanceData(formattedData);
     } catch (error) {
       console.error('Error fetching attendance data:', error);
+      setAttendanceData([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const generateMonthAttendance = () => {
-    const days = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-    const statuses = ['present', 'present', 'present', 'present', 'absent', 'late', 'half-day', 'leave'];
-    return Array.from({ length: days }, (_, i) => ({
-      date: i + 1,
-      status: statuses[Math.floor(Math.random() * statuses.length)]
-    }));
-  };
+  const filteredData = selectedDepartment === 'All'
+    ? attendanceData
+    : attendanceData.filter(emp => emp.department === selectedDepartment);
+
+  // Removed generateMonthAttendance as it is no longer needed
 
   const getDaysInMonth = () => {
     return new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
@@ -207,14 +211,14 @@ const ManagerAttendanceCalendar = () => {
                     Loading attendance data...
                   </td>
                 </tr>
-              ) : attendanceData.length === 0 ? (
+              ) : filteredData.length === 0 ? (
                 <tr>
                   <td colSpan={getDaysInMonth() + 1} className="px-6 py-8 text-center text-slate-500">
                     No attendance records found for this period.
                   </td>
                 </tr>
               ) : (
-                attendanceData.map((employee) => (
+                filteredData.map((employee) => (
                   <tr key={employee.id} style={{ borderColor: themeColors.border }} className="border-b hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                     <td style={{ backgroundColor: themeColors.card, color: themeColors.text }} className="px-6 py-4 font-medium sticky left-0 z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
                       <div className="flex items-center gap-3">
@@ -227,16 +231,25 @@ const ManagerAttendanceCalendar = () => {
                         </div>
                       </div>
                     </td>
-                    {employee.attendance.map((record, index) => (
-                      <td key={index} className="px-1 py-3 text-center">
-                        <div
-                          className={`w-8 h-8 mx-auto rounded-lg flex items-center justify-center text-xs font-bold transition-all hover:scale-110 cursor-help ${getStatusColor(record.status)}`}
-                          title={`${record.date} ${monthNames[currentDate.getMonth()]}: ${record.status}`}
-                        >
-                          {getStatusLabel(record.status)}
-                        </div>
-                      </td>
-                    ))}
+                    {Array.from({ length: getDaysInMonth() }, (_, i) => {
+                      const day = i + 1;
+                      // Find attendance record for this day
+                      const record = employee.attendance.find(a => a.date === day);
+                      return (
+                        <td key={i} className="px-1 py-3 text-center">
+                          {record ? (
+                            <div
+                              className={`w-8 h-8 mx-auto rounded-lg flex items-center justify-center text-xs font-bold transition-all hover:scale-110 cursor-help ${getStatusColor(record.status)}`}
+                              title={`${day} ${monthNames[currentDate.getMonth()]}: ${record.status}`}
+                            >
+                              {getStatusLabel(record.status)}
+                            </div>
+                          ) : (
+                            <div className="w-8 h-8 mx-auto text-center flex items-center justify-center text-gray-300">-</div>
+                          )}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))
               )}
