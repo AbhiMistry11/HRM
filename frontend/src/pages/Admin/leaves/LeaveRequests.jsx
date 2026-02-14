@@ -291,77 +291,7 @@ const LeaveRequests = () => {
         </div>
       </div>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Status Distribution Pie Chart */}
-        <div className={`${cardBg} rounded-xl p-6 border ${cardBorder}`}>
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className={`text-lg font-semibold ${textPrimary}`}>Status Distribution</h3>
-              <p className={`text-sm ${textSecondary}`}>Breakdown of leave requests</p>
-            </div>
-            <FiPieChart className={`w-6 h-6 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
-          </div>
-          <div className="h-64" style={{ minWidth: 0 }}>
-            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-              <PieChart>
-                <Pie
-                  data={statusDistribution}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {statusDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            {statusDistribution.map((item, index) => (
-              <div key={index} className="text-center">
-                <div className="text-2xl font-bold text-white" style={{ color: item.color }}>
-                  {item.value}
-                </div>
-                <div className={`text-sm ${textSecondary}`}>{item.name}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-
-
-        {/* Monthly Trends */}
-        <div className={`${cardBg} rounded-xl p-6 border ${cardBorder}`}>
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className={`text-lg font-semibold ${textPrimary}`}>Monthly Trends</h3>
-              <p className={`text-sm ${textSecondary}`}>Last 6 months leave activity</p>
-            </div>
-            <FiBarChart2 className={`w-6 h-6 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
-          </div>
-          <div className="h-64" style={{ minWidth: 0 }}>
-            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-              <BarChart data={monthlyTrendData}>
-                <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? "#374151" : "#E5E7EB"} />
-                <XAxis dataKey="month" stroke={darkMode ? "#9CA3AF" : "#6B7280"} />
-                <YAxis stroke={darkMode ? "#9CA3AF" : "#6B7280"} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Bar dataKey="requests" name="Total Requests" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="approved" name="Approved" fill="#10B981" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
+      
 
       {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -378,7 +308,7 @@ const LeaveRequests = () => {
         <div className={`${cardBg} p-5 rounded-xl border ${darkMode ? 'border-amber-500/30' : 'border-amber-200'}`}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-amber-600 dark:text-amber-300">Pending</p>
+              <p className="text-sm text-amber-600 dark:text-amber-300">Pending Leave Approval</p>
               <h3 className="text-2xl font-bold text-amber-600 dark:text-amber-300 mt-1">{stats.pending}</h3>
             </div>
             <FiClock className="w-8 h-8 text-amber-500" />
@@ -431,7 +361,7 @@ const LeaveRequests = () => {
                   : `${inputBg} ${textSecondary} hover:text-white border ${inputBorder}`
                   }`}
               >
-                Pending ({stats.pending})
+                Pending Leave Approval ({stats.pending})
               </button>
               <button
                 onClick={() => setFilter("approved")}
@@ -651,18 +581,84 @@ const LeaveRequests = () => {
             Instead we can show maybe recent rejections or just make the upcoming full width
         */}
 
+        {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Status Distribution Pie Chart */}
+        <div className={`${cardBg} rounded-xl p-6 border ${cardBorder}`}>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className={`text-lg font-semibold ${textPrimary}`}>Status Distribution</h3>
+              <p className={`text-sm ${textSecondary}`}>Breakdown of leave requests</p>
+            </div>
+            <FiPieChart className={`w-6 h-6 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+          </div>
+          <div className="h-64" style={{ minWidth: 0 }}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+              <PieChart>
+                <Pie
+                  data={statusDistribution}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {statusDistribution.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            {statusDistribution.map((item, index) => (
+              <div key={index} className="text-center">
+                <div className="text-2xl font-bold text-white" style={{ color: item.color }}>
+                  {item.value}
+                </div>
+                <div className={`text-sm ${textSecondary}`}>{item.name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+
+
+        {/* Monthly Trends */}
+        <div className={`${cardBg} rounded-xl p-6 border ${cardBorder}`}>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className={`text-lg font-semibold ${textPrimary}`}>Monthly Trends</h3>
+              <p className={`text-sm ${textSecondary}`}>Last 6 months leave activity</p>
+            </div>
+            <FiBarChart2 className={`w-6 h-6 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+          </div>
+          <div className="h-64" style={{ minWidth: 0 }}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+              <BarChart data={monthlyTrendData}>
+                <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? "#374151" : "#E5E7EB"} />
+                <XAxis dataKey="month" stroke={darkMode ? "#9CA3AF" : "#6B7280"} />
+                <YAxis stroke={darkMode ? "#9CA3AF" : "#6B7280"} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar dataKey="requests" name="Total Requests" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="approved" name="Approved" fill="#10B981" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
 
         {/* Upcoming Leaves */}
         <div className={`${cardBg} rounded-xl p-6 border ${cardBorder}`}>
           <div className="flex justify-between items-center mb-4">
             <h3 className={`text-lg font-semibold ${textPrimary}`}>Upcoming Approved Leaves</h3>
-            <button
-              onClick={() => setFilter("approved")}
-              className={`text-sm ${darkMode ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'} font-medium`}
-            >
-              View All →
-            </button>
-          </div>
+            </div>
 
           <div className="space-y-3">
             {leaveRequests

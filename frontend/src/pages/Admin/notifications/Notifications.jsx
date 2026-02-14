@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FiBell, FiCheck, FiTrash2, FiSettings, FiCalendar, FiUser, FiBriefcase, FiAlertCircle, FiTrendingUp } from "react-icons/fi";
+import { FiBell, FiCheck, FiTrash2, FiSettings, FiCalendar, FiUser, FiBriefcase, FiAlertCircle } from "react-icons/fi";
 import { useTheme, useThemeClasses } from "../../../contexts/ThemeContext";
 
 const Notifications = () => {

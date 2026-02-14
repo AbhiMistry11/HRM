@@ -1,16 +1,15 @@
+import { GoCheck } from "react-icons/go";
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {
   FiUsers,
   FiCalendar,
-  FiTrendingUp,
   FiClock,
   FiBriefcase,
   FiCheckCircle,
   FiAlertCircle,
   FiDownload,
   FiClipboard,
-  FiActivity,
   FiPieChart,
   FiBarChart2
 } from "react-icons/fi";
@@ -418,7 +417,7 @@ const AdminHome = () => {
     },
     {
       icon: <FiClock className="w-6 h-6" />,
-      label: "Pending Leaves",
+      label: "Pending Leave Approval",
       value: dashboard ? String(dashboard.pendingLeaves) : "—",
       change: dashboard ? `On leave: ${dashboard.onLeaveToday}` : "3 Today",
       trend: "down",
@@ -487,7 +486,7 @@ const AdminHome = () => {
         color: colors.primary,
       },
       {
-        type: "Pending",
+        type: "Pending Leave Approval",
         count: dashboard ? dashboard.pendingLeaves : 0,
         color: "#10B981",
       },
@@ -590,19 +589,19 @@ const AdminHome = () => {
           </p>
           {payload.map((entry, index) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
-              {entry.name}: {entry.value}%
+              {entry.name}: {entry.value}{entry.name.includes('%') ? '%' : ''}
             </p>
           ))}
         </div>
       );
     }
     return null;
-  };
+  }; 
 
   const getTrendIcon = (trend) => {
     if (trend === "up")
       return (
-        <FiTrendingUp className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+        <GoCheck className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
       );
     if (trend === "down")
       return (
@@ -664,7 +663,7 @@ const AdminHome = () => {
       case "payroll":
         return <FaRupeeSign className="w-5 h-5" />;
       case "review":
-        return <FiTrendingUp className="w-5 h-5" />;
+        return <GoCheck className="w-5 h-5" />;
       case "holiday":
         return <FiCalendar className="w-5 h-5" />;
       default:
@@ -743,11 +742,10 @@ const AdminHome = () => {
             <h2 className={`text-lg font-semibold ${theme.text.primary}`}>
               Department Performance
             </h2>
-
           </div>
-          <div className="h-72">
+          <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={departmentData}>
+              <ComposedChart data={departmentData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke={darkMode ? "#374151" : "#E5E7EB"}
@@ -755,26 +753,61 @@ const AdminHome = () => {
                 <XAxis
                   dataKey="name"
                   stroke={darkMode ? "#9CA3AF" : "#6B7280"}
+                  label={{ 
+                    value: 'Departments', 
+                    position: 'insideBottom', 
+                    offset: -10,
+                    fill: darkMode ? "#9CA3AF" : "#6B7280"
+                  }}
                 />
-                <YAxis stroke={darkMode ? "#9CA3AF" : "#6B7280"} />
+                <YAxis 
+                  yAxisId="left"
+                  stroke={darkMode ? "#9CA3AF" : "#6B7280"}
+                  label={{ 
+                    value: 'Percentage (%)', 
+                    angle: -90, 
+                    position: 'insideLeft',
+                    fill: darkMode ? "#9CA3AF" : "#6B7280"
+                  }}
+                />
+                <YAxis 
+                  yAxisId="right"
+                  orientation="right"
+                  stroke={darkMode ? "#9CA3AF" : "#6B7280"}
+                  label={{ 
+                    value: 'Employee Count', 
+                    angle: 90, 
+                    position: 'insideRight',
+                    fill: darkMode ? "#9CA3AF" : "#6B7280"
+                  }}
+                />
                 <Tooltip content={<CustomTooltip />} />
-                <Legend />
+                <Legend 
+                  verticalAlign="top" 
+                  height={36}
+                  wrapperStyle={{
+                    paddingBottom: "20px"
+                  }}
+                />
                 <Bar
+                  yAxisId="left"
                   dataKey="attendance"
                   name="Attendance (%)"
                   fill={colors.primary}
                   radius={[4, 4, 0, 0]}
                 />
                 <Bar
+                  yAxisId="left"
                   dataKey="productivity"
                   name="Productivity (%)"
                   fill={colors.secondary}
                   radius={[4, 4, 0, 0]}
                 />
                 <Line
+                  yAxisId="right"
                   type="monotone"
                   dataKey="employees"
-                  name="Employees"
+                  name="Employees (Count)"
                   stroke={colors.warning}
                   strokeWidth={2}
                 />
@@ -791,11 +824,10 @@ const AdminHome = () => {
             <h2 className={`text-lg font-semibold ${theme.text.primary}`}>
               Monthly Attendance Trends
             </h2>
-
           </div>
-          <div className="h-72">
+          <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={attendanceTrendData}>
+              <AreaChart data={attendanceTrendData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke={darkMode ? "#374151" : "#E5E7EB"}
@@ -803,14 +835,34 @@ const AdminHome = () => {
                 <XAxis
                   dataKey="day"
                   stroke={darkMode ? "#9CA3AF" : "#6B7280"}
+                  label={{ 
+                    value: 'Month', 
+                    position: 'insideBottom', 
+                    offset: -10,
+                    fill: darkMode ? "#9CA3AF" : "#6B7280"
+                  }}
                 />
-                <YAxis stroke={darkMode ? "#9CA3AF" : "#6B7280"} />
+                <YAxis 
+                  stroke={darkMode ? "#9CA3AF" : "#6B7280"}
+                  label={{ 
+                    value: 'No. of Employees', 
+                    angle: -90, 
+                    position: 'insideLeft',
+                    fill: darkMode ? "#9CA3AF" : "#6B7280"
+                  }}
+                />
                 <Tooltip content={<CustomTooltip />} />
-                <Legend />
+                <Legend 
+                  verticalAlign="top" 
+                  height={36}
+                  wrapperStyle={{
+                    paddingBottom: "20px"
+                  }}
+                />
                 <Area
                   type="monotone"
                   dataKey="present"
-                  name="Present (%)"
+                  name="Present Employees"
                   stroke={colors.primary}
                   fill={colors.primary}
                   fillOpacity={0.3}
@@ -839,20 +891,19 @@ const AdminHome = () => {
             <h2 className={`text-lg font-semibold ${theme.text.primary}`}>
               Employee Distribution
             </h2>
-
           </div>
-          <div className="h-64">
+          <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+              <PieChart margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                 <Pie
                   data={employeeDistributionData}
                   cx="50%"
                   cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) =>
-                    `${name}: ${(percent * 100).toFixed(0)}%`
+                  labelLine={true}
+                  label={({ name, percent, value }) =>
+                    `${name}: ${value} (${(percent * 100).toFixed(0)}%)`
                   }
-                  outerRadius={80}
+                  outerRadius={90}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -860,10 +911,20 @@ const AdminHome = () => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip
-                  formatter={(value) => [`${value} employees`, "Count"]}
+                <Tooltip 
+                  formatter={(value, name, props) => [
+                    `${value} employees`, 
+                    props.payload.name
+                  ]}
+                  labelFormatter={(label) => `Department: ${label}`}
                 />
-                <Legend />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36}
+                  wrapperStyle={{
+                    paddingTop: "20px"
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -877,11 +938,10 @@ const AdminHome = () => {
             <h2 className={`text-lg font-semibold ${theme.text.primary}`}>
               Leave Statistics
             </h2>
-
           </div>
-          <div className="h-64">
+          <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={leaveData}>
+              <BarChart data={leaveData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke={darkMode ? "#374151" : "#E5E7EB"}
@@ -891,11 +951,40 @@ const AdminHome = () => {
                   stroke={darkMode ? "#9CA3AF" : "#6B7280"}
                   angle={-45}
                   textAnchor="end"
-                  height={60}
+                  height={80}
+                  interval={0}
+                  label={{ 
+                    value: 'Leave Approved or not', 
+                    position: 'insideBottom', 
+                    offset: -50,
+                    fill: darkMode ? "#9CA3AF" : "#6B7280"
+                  }}
                 />
-                <YAxis stroke={darkMode ? "#9CA3AF" : "#6B7280"} />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="count" name="Leave Count" radius={[4, 4, 0, 0]}>
+                <YAxis 
+                  stroke={darkMode ? "#9CA3AF" : "#6B7280"}
+                  label={{ 
+                    value: 'No. of Leaves', 
+                    angle: -90, 
+                    position: 'insideLeft',
+                    fill: darkMode ? "#9CA3AF" : "#6B7280"
+                  }}
+                />
+                <Tooltip 
+                  formatter={(value) => [`${value} leaves`, 'Count']}
+                  labelFormatter={(label) => `Type: ${label}`}
+                />
+                <Legend 
+                  verticalAlign="top" 
+                  height={36}
+                  wrapperStyle={{
+                    paddingBottom: "20px"
+                  }}
+                />
+                <Bar 
+                  dataKey="count" 
+                  name="Leave Count" 
+                  radius={[4, 4, 0, 0]}
+                >
                   {leaveData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
@@ -904,124 +993,9 @@ const AdminHome = () => {
             </ResponsiveContainer>
           </div>
         </div>
-
-        {/* Upcoming Events */}
-        {/* <div className={`${theme.bg.secondary} rounded-xl p-6 border ${theme.border.primary} shadow-sm`}>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className={`text-lg font-semibold ${theme.text.primary}`}>Upcoming Events</h2>
-            <button className="text-sm text-purple-600 dark:text-purple-400 hover:underline">View All</button>
-          </div>
-          
-          <div className="space-y-4">
-            {upcomingEvents.map((event, index) => (
-              <div key={index} className={`flex items-start gap-3 p-3 ${darkMode ? 'bg-gray-900/50 hover:bg-gray-900' : 'bg-gray-100 hover:bg-gray-200'} rounded-lg transition-colors`}>
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getEventColor(event.type)}`}>
-                  {getEventIcon(event.type)}
-                </div>
-                <div className="flex-1">
-                  <p className={`font-medium ${theme.text.primary}`}>{event.title}</p>
-                  <p className={`text-sm ${theme.text.secondary}`}>{event.time}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-
-          <div className={`mt-6 pt-6 border-t ${theme.border.primary}`}>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center">
-                <div className={`text-2xl font-bold ${theme.text.primary}`}>
-                  {attendanceRate !== null ? `${attendanceRate.toFixed(1)}%` : "—"}
-                </div>
-                <div className={`text-sm ${theme.text.secondary}`}>Avg. Attendance</div>
-              </div>
-              <div className="text-center">
-                <div className={`text-2xl font-bold ${theme.text.primary}`}>
-                  {avgRating !== null ? avgRating.toFixed(2) : "—"}
-                </div>
-                <div className={`text-sm ${theme.text.secondary}`}>Avg. Rating</div>
-              </div>
-            </div>
-          </div>
-        </div> */}
       </div>
 
       <div className="grid grid-cols-1 gap-6 mb-8">
-        {/* <div className={`${theme.bg.secondary} rounded-xl p-6 border ${theme.border.primary} shadow-sm`}>
-          <h2 className={`text-lg font-semibold ${theme.text.primary} mb-6`}>System Status</h2>
-          
-          <div className="space-y-4">
-            <div className={`flex items-center justify-between p-3 ${darkMode ? 'bg-gray-900/50' : 'bg-gray-100'} rounded-lg`}>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <div>
-                  <div className={`text-sm ${theme.text.primary}`}>Database</div>
-                  <div className={`text-xs ${theme.text.secondary}`}>System service</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Online</div>
-                <div className={`text-xs ${theme.text.secondary}`}>100%</div>
-              </div>
-            </div>
-            
-            <div className={`flex items-center justify-between p-3 ${darkMode ? 'bg-gray-900/50' : 'bg-gray-100'} rounded-lg`}>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <div>
-                  <div className={`text-sm ${theme.text.primary}`}>API Services</div>
-                  <div className={`text-xs ${theme.text.secondary}`}>System service</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Online</div>
-                <div className={`text-xs ${theme.text.secondary}`}>95%</div>
-              </div>
-            </div>
-            
-            <div className={`flex items-center justify-between p-3 ${darkMode ? 'bg-gray-900/50' : 'bg-gray-100'} rounded-lg`}>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
-                <div>
-                  <div className={`text-sm ${theme.text.primary}`}>Storage</div>
-                  <div className={`text-xs ${theme.text.secondary}`}>System service</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-medium text-amber-600 dark:text-amber-400">Optimal</div>
-                <div className={`text-xs ${theme.text.secondary}`}>65% Used</div>
-              </div>
-            </div>
-            
-            <div className={`flex items-center justify-between p-3 ${darkMode ? 'bg-gray-900/50' : 'bg-gray-100'} rounded-lg`}>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></div>
-                <div>
-                  <div className={`text-sm ${theme.text.primary}`}>Backup</div>
-                  <div className={`text-xs ${theme.text.secondary}`}>System service</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-medium text-purple-600 dark:text-purple-400">Synchronized</div>
-                <div className={`text-xs ${theme.text.secondary}`}>Last: 2:00 AM</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <div className={`flex justify-between text-sm ${theme.text.primary} mb-2`}>
-              <span>System Health</span>
-              <span>92%</span>
-            </div>
-            <div className={`h-2 ${darkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full overflow-hidden`}>
-              <div 
-                className="h-full bg-gradient-to-r from-emerald-500 to-purple-500 rounded-full"
-                style={{ width: "92%" }}
-              ></div>
-            </div>
-          </div>
-        </div> */}
-
         <div
           className={`${theme.bg.secondary} rounded-xl p-6 border ${theme.border.primary} shadow-sm`}
         >
@@ -1029,7 +1003,7 @@ const AdminHome = () => {
             Quick Actions
           </h2>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <button
               className={`flex flex-col items-center justify-center p-4 ${darkMode ? "bg-purple-500/10 hover:bg-purple-500/20" : "bg-purple-50 hover:bg-purple-100"} rounded-lg border ${darkMode ? "border-purple-500/30" : "border-purple-200"} transition-colors`}
               onClick={() => navigate("/admin/employees/add")}
@@ -1112,7 +1086,7 @@ const AdminHome = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {recentActivities.map((activity, index) => (
+          {recentActivities.slice(0, 4).map((activity, index) => (
             <div
               key={index}
               className={`${darkMode ? "bg-gray-900/50" : "bg-gray-100"} rounded-xl p-4 border ${theme.border.primary} hover:border-purple-500/30 transition-colors`}
@@ -1125,53 +1099,6 @@ const AdminHome = () => {
                     {getStatusIcon(activity.status)}
                   </div>
                 </div>
-                {/* All Activities Modal (in-page) */}
-                {showAllActivities && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div
-                      className="absolute inset-0 bg-black opacity-50"
-                      onClick={() => setShowAllActivities(false)}
-                    />
-                    <div className={`relative w-11/12 max-w-3xl ${theme.bg.secondary} rounded-lg p-6 border ${theme.border.primary} shadow-lg z-10`}>
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className={`text-lg font-semibold ${theme.text.primary}`}>All Activities</h3>
-                        <button
-                          type="button"
-                          onClick={() => setShowAllActivities(false)}
-                          className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
-                        >
-                          Close
-                        </button>
-                      </div>
-
-                      <div className="max-h-80 overflow-auto space-y-3">
-                        {(dashboard?.recentWorklogs && dashboard.recentWorklogs.length > 0
-                          ? dashboard.recentWorklogs
-                          : recentActivities
-                        ).map((w, i) => (
-                          <div
-                            key={i}
-                            className={`p-3 rounded-lg border ${theme.border.primary} ${darkMode ? "bg-gray-900/50" : "bg-white"}`}
-                          >
-                            <div className="flex justify-between">
-                              <div>
-                                <div className={`font-medium ${theme.text.primary}`}>
-                                  {w.employee?.fullName || w.user || "Unknown"}
-                                </div>
-                                <div className={`text-sm ${theme.text.secondary}`}>
-                                  {w.description || w.action || "Activity"}
-                                </div>
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {w.date || w.time || "-"}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
                 <div>
                   <p className={`font-medium ${theme.text.primary}`}>
                     {activity.user}
@@ -1204,6 +1131,54 @@ const AdminHome = () => {
           ))}
         </div>
       </div>
+
+      {/* All Activities Modal (in-page) */}
+      {showAllActivities && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black opacity-50"
+            onClick={() => setShowAllActivities(false)}
+          />
+          <div className={`relative w-11/12 max-w-3xl ${theme.bg.secondary} rounded-lg p-6 border ${theme.border.primary} shadow-lg z-10`}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className={`text-lg font-semibold ${theme.text.primary}`}>All Activities</h3>
+              <button
+                type="button"
+                onClick={() => setShowAllActivities(false)}
+                className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="max-h-80 overflow-auto space-y-3">
+              {(dashboard?.recentWorklogs && dashboard.recentWorklogs.length > 0
+                ? dashboard.recentWorklogs
+                : recentActivities
+              ).map((w, i) => (
+                <div
+                  key={i}
+                  className={`p-3 rounded-lg border ${theme.border.primary} ${darkMode ? "bg-gray-900/50" : "bg-white"}`}
+                >
+                  <div className="flex justify-between">
+                    <div>
+                      <div className={`font-medium ${theme.text.primary}`}>
+                        {w.employee?.fullName || w.user || "Unknown"}
+                      </div>
+                      <div className={`text-sm ${theme.text.secondary}`}>
+                        {w.description || w.action || "Activity"}
+                      </div>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {w.date || w.time || "-"}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

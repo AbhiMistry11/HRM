@@ -1,11 +1,11 @@
+import { MdSignalWifiStatusbarConnectedNoInternet1 } from "react-icons/md";
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   FiArrowLeft, FiUser, FiMail, FiPhone, FiBriefcase,
   FiCalendar, FiMapPin, FiDownload, FiCheck, FiX,
   FiMessageSquare, FiStar, FiFileText, FiRefreshCw, FiCopy,
-  FiUpload, FiAlertCircle, FiClock, FiActivity
-} from "react-icons/fi";
+  FiUpload, FiAlertCircle, FiClock} from "react-icons/fi";
 import jobService from "../../../services/jobService";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -540,7 +540,7 @@ const ApplicationDetails = () => {
                   <div className={`px-4 py-3 rounded-xl border-2 font-semibold text-sm ${getStatusColor(status)}`}>
                     <div className="flex items-center justify-between">
                       <span>{status}</span>
-                      <FiActivity className="w-4 h-4" />
+                      <MdSignalWifiStatusbarConnectedNoInternet1 className="w-4 h-4" />
                     </div>
                   </div>
                 </div>

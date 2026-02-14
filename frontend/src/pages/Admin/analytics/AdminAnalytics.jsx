@@ -1,7 +1,8 @@
+import { MdMoreTime } from "react-icons/md";
+import { GoCheck } from "react-icons/go";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FiUsers, FiCalendar, FiTrendingUp, FiTrendingDown, FiBarChart2, FiPieChart, FiActivity, FiDownload } from "react-icons/fi";
-import { FaRupeeSign } from "react-icons/fa";
+import { FiUsers, FiCalendar, FiBarChart2, FiPieChart, FiDownload } from "react-icons/fi";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, AreaChart, Area
@@ -9,6 +10,7 @@ import {
 import { useTheme, getThemeClasses } from "../../../contexts/ThemeContext";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { TbCalendarMonth } from "react-icons/tb";
 
 const AdminAnalytics = () => {
   const darkMode = useTheme();
@@ -479,7 +481,7 @@ const AdminAnalytics = () => {
               <p className={`text-sm ${textSecondary}`}>Total Employees</p>
               <h3 className={`text-2xl font-bold ${textPrimary} mt-2`}>{dashboard ? dashboard.totalEmployees : '—'}</h3>
               <div className="flex items-center gap-2 mt-2">
-                <FiTrendingUp className="w-4 h-4 text-green-500" />
+                <GoCheck className="w-4 h-4 text-green-500" />
                 <span className="text-sm text-green-500">{dashboard ? `Active users: ${dashboard.totalActiveUsers}` : '—'}</span>
               </div>
             </div>
@@ -496,12 +498,12 @@ const AdminAnalytics = () => {
               <p className={`text-sm ${textSecondary}`}>Avg. Attendance</p>
               <h3 className={`text-2xl font-bold ${textPrimary} mt-2`}>{dashboard ? `${((dashboard.presentToday / dashboard.totalEmployees) * 100).toFixed(1)}%` : '—'}</h3>
               <div className="flex items-center gap-2 mt-2">
-                <FiTrendingUp className="w-4 h-4 text-green-500" />
+                <GoCheck className="w-4 h-4 text-green-500" />
                 <span className="text-sm text-green-500">Present today: {dashboard ? dashboard.presentToday : '—'}</span>
               </div>
             </div>
             <div className={`w-12 h-12 rounded-lg ${darkMode ? 'bg-green-900/30' : 'bg-green-100'} flex items-center justify-center`}>
-              <FiCalendar className={`w-6 h-6 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
+              <GoCheck className={`w-6 h-6 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
             </div>
           </div>
         </div>
@@ -513,12 +515,12 @@ const AdminAnalytics = () => {
               <p className={`text-sm ${textSecondary}`}>Monthly Turnover</p>
               <h3 className={`text-2xl font-bold ${textPrimary} mt-2`}>{dashboard ? `${dashboard.onLeaveToday || 0}` : '—'}</h3>
               <div className="flex items-center gap-2 mt-2">
-                <FiTrendingDown className="w-4 h-4 text-red-500" />
+                <TbCalendarMonth className="w-4 h-4 text-red-500" />
                 <span className="text-sm text-red-500">On leave today</span>
               </div>
             </div>
             <div className={`w-12 h-12 rounded-lg ${darkMode ? 'bg-amber-900/30' : 'bg-amber-100'} flex items-center justify-center`}>
-              <FiActivity className={`w-6 h-6 ${darkMode ? 'text-amber-400' : 'text-amber-600'}`} />
+              <TbCalendarMonth className={`w-6 h-6 ${darkMode ? 'text-amber-400' : 'text-amber-600'}`} />
             </div>
           </div>
         </div>
@@ -530,7 +532,7 @@ const AdminAnalytics = () => {
               <p className={`text-sm ${textSecondary}`}>Avg. Performance</p>
               <h3 className={`text-2xl font-bold ${textPrimary} mt-2`}>{dashboard ? `${(dashboard.avgPerformance || 4.2).toFixed(1)}/5.0` : '—'}</h3>
               <div className="flex items-center gap-2 mt-2">
-                <FiTrendingUp className="w-4 h-4 text-green-500" />
+                <GoCheck className="w-4 h-4 text-green-500" />
                 <span className="text-sm text-green-500">{dashboard ? `Avg performance: ${(dashboard.avgPerformance || 4.2).toFixed(1)}` : '—'}</span>
               </div>
             </div>
@@ -543,47 +545,7 @@ const AdminAnalytics = () => {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Attendance Chart - Bar Chart */}
-        <div className={`${cardBg} rounded-xl p-6 border ${cardBorder} shadow-sm`}>
-
-          <div className="flex justify-between items-center mb-6">
-            <h3 className={`text-lg font-semibold ${textPrimary}`}>Weekly Attendance</h3>
-          </div>
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <BarChart
-                data={attendanceData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.gridColor} />
-                <XAxis
-                  dataKey="month"
-                  stroke={chartTheme.axisColor}
-                  tick={{ fill: chartTheme.textColor }}
-                />
-                <YAxis
-                  stroke={chartTheme.axisColor}
-                  tick={{ fill: chartTheme.textColor }}
-                />
-                <Tooltip
-                  content={<CustomTooltip />}
-                  contentStyle={{
-                    backgroundColor: colors.card,
-                    borderColor: colors.border,
-                    color: colors.text
-                  }}
-                />
-                <Legend />
-                <Bar
-                  dataKey="present"
-                  name="Present"
-                  fill={colors.primary}
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+       
 
         {/* Department Distribution - Pie Chart */}
         <div className={`${cardBg} rounded-xl p-6 border ${cardBorder} shadow-sm`}>
@@ -607,20 +569,36 @@ const AdminAnalytics = () => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip
-                  formatter={(value) => [`${value}%`, 'Percentage']}
-                  contentStyle={{
-                    backgroundColor: colors.card,
-                    borderColor: colors.border,
-                    color: colors.text
-                  }}
-                />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
+
+         {/* Recent Worklogs */}
+      <div className={`${cardBg} rounded-xl p-6 border ${cardBorder} shadow-sm mb-8`}>
+        <h3 className={`text-lg font-semibold ${textPrimary} mb-4`}>Recent Worklogs</h3>
+        {dashboard?.recentWorklogs && dashboard.recentWorklogs.length > 0 ? (
+          <div className="space-y-3">
+            {dashboard.recentWorklogs.map((w) => (
+              <div key={w.id} className={`p-3 rounded ${darkMode ? 'bg-slate-900/50' : 'bg-gray-50'}`}>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className={`font-semibold ${textPrimary}`}>{w.employee?.fullName || 'Unknown'}</div>
+                    <div className={`text-sm ${textSecondary}`}>{w.description}</div>
+                  </div>
+                  <div className="text-sm text-gray-500">{new Date(w.date).toLocaleDateString()} • {w.hoursWorked} hrs</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className={textSecondary}>No recent worklogs found</p>
+        )}
       </div>
+      </div>
+
+      
 
       {/* Additional Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -653,7 +631,7 @@ const AdminAnalytics = () => {
         <div className={`${cardBg} rounded-xl p-6 border ${cardBorder} shadow-sm`}>
           <div className="flex items-center gap-3 mb-4">
             <div className={`w-10 h-10 rounded-lg ${darkMode ? 'bg-green-900/30' : 'bg-green-100'} flex items-center justify-center`}>
-              <FiActivity className={`w-5 h-5 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
+              <MdMoreTime className={`w-5 h-5 ${darkMode ? 'text-green-400' : 'text-green-600'}`} />
             </div>
             <div>
               <h3 className={`font-semibold ${textPrimary}`}>Overtime Hours</h3>
@@ -684,27 +662,75 @@ const AdminAnalytics = () => {
 
       </div>
 
-      {/* Recent Worklogs */}
-      <div className={`${cardBg} rounded-xl p-6 border ${cardBorder} shadow-sm mb-8`}>
-        <h3 className={`text-lg font-semibold ${textPrimary} mb-4`}>Recent Worklogs</h3>
-        {dashboard?.recentWorklogs && dashboard.recentWorklogs.length > 0 ? (
-          <div className="space-y-3">
-            {dashboard.recentWorklogs.map((w) => (
-              <div key={w.id} className={`p-3 rounded ${darkMode ? 'bg-slate-900/50' : 'bg-gray-50'}`}>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <div className={`font-semibold ${textPrimary}`}>{w.employee?.fullName || 'Unknown'}</div>
-                    <div className={`text-sm ${textSecondary}`}>{w.description}</div>
-                  </div>
-                  <div className="text-sm text-gray-500">{new Date(w.date).toLocaleDateString()} • {w.hoursWorked} hrs</div>
+
+{/* Department Performance Table */}
+<div className={`${cardBg} rounded-xl p-6 border ${cardBorder} shadow-sm mb-8`}>
+  <h3 className={`text-lg font-semibold ${textPrimary} mb-6`}>Department Performance</h3>
+  <div className="overflow-x-auto">
+    <table className="w-full">
+      <thead className={darkMode ? 'bg-slate-700' : 'bg-gray-100'}>
+        <tr>
+          <th className={`p-4 text-center text-sm font-semibold ${textSecondary}`}>Department</th>
+          <th className={`p-4 text-center text-sm font-semibold ${textSecondary}`}>Employees</th>
+          <th className={`p-4 text-center text-sm font-semibold ${textSecondary}`}>Attendance Rate</th>
+          <th className={`p-4 text-center text-sm font-semibold ${textSecondary}`}>Late Arrivals</th>
+          <th className={`p-4 text-center text-sm font-semibold ${textSecondary}`}>Absences</th>
+          <th className={`p-4 text-center text-sm font-semibold ${textSecondary}`}>Performance</th>
+        </tr>
+      </thead>
+      <tbody>
+        {departmentData.map((dept, index) => (
+          <tr key={index} className={`hover:${darkMode ? 'bg-slate-700' : 'bg-gray-50'} transition-colors border-t ${cardBorder}`}>
+            <td className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-600 to-purple-400 flex items-center justify-center text-white font-bold">
+                  {dept.name.charAt(0)}
+                </div>
+                <div>
+                  <p className={`font-medium ${textPrimary}`}>{dept.name} Department</p>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <p className={textSecondary}>No recent worklogs found</p>
-        )}
-      </div>
+            </td>
+            <td className="p-4 text-center">
+              <span className={`font-bold ${textPrimary}`}>{dept.value}</span>
+            </td>
+            <td className="p-4 text-center">
+              <div className="flex items-center justify-center gap-3">
+                <div className="flex-1 max-w-[150px]">
+                  <div className={`h-2 ${darkMode ? 'bg-gray-700' : 'bg-gray-300'} rounded-full overflow-hidden`}>
+                    <div
+                      className={`h-full rounded-full ${dept.value >= 35 ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' :
+                        dept.value >= 20 ? 'bg-gradient-to-r from-amber-500 to-amber-400' : 'bg-gradient-to-r from-rose-500 to-rose-400'
+                        }`}
+                      style={{ width: `${(dept.value / 50) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+                <span className={`font-bold ${textPrimary}`}>{dept.value}%</span>
+              </div>
+            </td>
+            <td className="p-4 text-center">
+              <span className="font-bold text-amber-400">{Math.floor(dept.value / 5)}</span>
+            </td>
+            <td className="p-4 text-center">
+              <span className="font-bold text-rose-400">{Math.floor(dept.value / 8)}</span>
+            </td>
+            <td className="p-4 text-center">
+              <span className={`px-3 py-1.5 rounded-full text-sm font-medium border ${dept.value >= 35 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
+                dept.value >= 20 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-rose-500/20 text-rose-400 border-rose-500/30'
+                }`}>
+                {dept.value >= 35 ? 'Excellent' :
+                  dept.value >= 20 ? 'Good' : 'Needs Improvement'}
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+     
 
     </div>
   );
