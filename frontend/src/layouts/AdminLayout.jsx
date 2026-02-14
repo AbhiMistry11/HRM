@@ -1,3 +1,4 @@
+import { FaRegUser } from "react-icons/fa";
 import { ThemeWrapper } from '../contexts/ThemeContext';
 import React, { useState, useEffect } from "react";
 import Chatbot from "../components/Chatbot";
@@ -7,7 +8,6 @@ import {
   FiUsers,
   FiLayers,
   FiCalendar,
-  FiSettings,
   FiLogOut,
   FiBell,
   FiChevronDown,
@@ -20,12 +20,11 @@ import {
   FiPieChart,
   FiClipboard,
   FiSearch,
-  FiTrendingUp,
-  FiActivity,
   FiLock,
   FiSun,
   FiMoon,
 } from "react-icons/fi";
+import { VscGraph } from "react-icons/vsc";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { HiOutlineOfficeBuilding } from "react-icons/hi";
 import { AiOutlineAudit } from "react-icons/ai";
@@ -40,10 +39,22 @@ const AdminLayout = ({ children, logout }) => {
   const [expandedMenus, setExpandedMenus] = useState({});
   const [darkMode, setDarkMode] = useState(true);
   const [user, setUser] = useState(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [showSeconds, setShowSeconds] = useState(false);
 
   // Notification state
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // Update time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(timer);
+  }, []);
 
   // Fetch user info
   useEffect(() => {
@@ -200,7 +211,7 @@ const AdminLayout = ({ children, logout }) => {
     // Analytics Module
     {
       label: "Analytics",
-      icon: <FiTrendingUp />,
+      icon: <VscGraph />,
       path: "/admin/analytics",
       subItems: [
         { label: "Dashboard", path: "/admin/analytics" },
@@ -217,8 +228,7 @@ const AdminLayout = ({ children, logout }) => {
       ]
     },
 
-    // Settings Module
-    { label: "Settings", icon: <FiSettings />, path: "/admin/settings" },
+    { label: "Profile", icon: <FaRegUser />, path: "/admin/profile" },
   ];
 
   // Helper for time formatting
@@ -632,9 +642,17 @@ const AdminLayout = ({ children, logout }) => {
               )}
             </div>
 
-            {/* Clock */}
-            <div className={`${darkMode ? 'bg-gray-700' : 'bg-gray-100'} ${darkMode ? 'text-gray-300' : 'text-gray-600'} px-4 py-2 rounded-lg text-sm font-medium border ${darkMode ? 'border-gray-600' : 'border-gray-300'}`}>
-              {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {/* Clock - Click to toggle seconds */}
+            <div
+              onClick={() => setShowSeconds(!showSeconds)}
+              className={`${darkMode ? 'bg-gray-700' : 'bg-gray-100'} ${darkMode ? 'text-gray-300' : 'text-gray-600'} px-4 py-2 rounded-lg text-sm font-medium border ${darkMode ? 'border-gray-600' : 'border-gray-300'} cursor-pointer hover:opacity-80 transition-opacity`}
+              title={showSeconds ? "Click to hide seconds" : "Click to show seconds"}
+            >
+              {currentTime.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+                ...(showSeconds && { second: '2-digit' })
+              })}
             </div>
 
             {/* User Dropdown */}
@@ -662,12 +680,12 @@ const AdminLayout = ({ children, logout }) => {
 
                   <button
                     onClick={() => {
-                      navigate('/admin/settings');
+                      navigate('/admin/profile');
                       setUserDropdown(false);
                     }}
                     className={`w-full text-left px-4 py-2 text-sm ${darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-50'} transition-colors`}
                   >
-                    <FiSettings className="inline mr-2" /> Settings
+                    <FaRegUser className="inline mr-2" /> Profile
                   </button>
                   <div className={`border-t ${sidebarBorder} mt-2 pt-2`}>
                     <button
@@ -683,7 +701,7 @@ const AdminLayout = ({ children, logout }) => {
           </div>
         </header>
 
-        <main className={`flex-1 overflow-y-auto p-6 transition-colors duration-300`}>
+        <main id="app-scroll-container" className={`flex-1 overflow-y-auto p-6 transition-colors duration-300`}>
           <div className="w-full">
             <ThemeWrapper darkMode={darkMode}>
               <Outlet />
