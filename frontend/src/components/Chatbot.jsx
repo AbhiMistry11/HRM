@@ -4,17 +4,27 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import ReactMarkdown from "react-markdown";
 
-const Chatbot = () => {
+const Chatbot = ({
+    endpoint = "/api/chatbot/ask",
+    welcomeMessage = "Hello! I am LiteHR's AI Assistant. How can I help you today?",
+    title = "HR Assistant",
+    subtitle = "Powered by LiteHR AI",
+}) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState([
-        {
-            text: "Hello! I am LiteHR's AI Assistant. How can I help you today?",
-            isUser: false,
-        },
-    ]);
+    const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
+
+    // Initialize/Reset messages when welcomeMessage changes
+    useEffect(() => {
+        setMessages([
+            {
+                text: welcomeMessage,
+                isUser: false,
+            },
+        ]);
+    }, [welcomeMessage]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -34,7 +44,22 @@ const Chatbot = () => {
         setIsLoading(true);
 
         try {
-            const response = await axios.post("http://localhost:5000/api/chatbot/ask", {
+            // Use relative path if starts with / otherwise keep as is (though here we expect relative mostly)
+            // But strict requirement: use the passed endpoint.
+            // If endpoint is relative, we might need full URL if frontend/backend are on different ports in dev?
+            // Usually vite proxy handles /api.
+            // Let's assume vite proxy is set up or we need to prepend http://localhost:5000 if strictly needed.
+            // Given previous code used direct http://localhost:5000, let's keep that pattern or use relative if proxy is set.
+            // The previous code had: http://localhost:5000/api/chatbot/ask
+            // So we should construct the full URL or rely on proxy. 
+            // Better to keep it flexible. If endpoint starts with http, use it, else prepend.
+
+            let url = endpoint;
+            if (!url.startsWith("http")) {
+                url = `http://localhost:5000${endpoint}`;
+            }
+
+            const response = await axios.post(url, {
                 message: userMessage,
             });
 
@@ -77,8 +102,8 @@ const Chatbot = () => {
                                 <Bot size={20} />
                             </div>
                             <div>
-                                <h3 className="font-semibold text-sm leading-tight">HR Assistant</h3>
-                                <p className="text-[10px] text-indigo-100 opacity-90">Powered by LiteHR AI</p>
+                                <h3 className="font-semibold text-sm leading-tight">{title}</h3>
+                                <p className="text-[10px] text-indigo-100 opacity-90">{subtitle}</p>
                             </div>
                         </div>
                         <button
@@ -139,7 +164,7 @@ const Chatbot = () => {
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                placeholder="Ask about leave, policies..."
+                                placeholder="Ask me anything..."
                                 className="w-full pl-4 pr-12 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400"
                             />
                             <button

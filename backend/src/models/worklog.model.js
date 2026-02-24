@@ -22,7 +22,15 @@ export const defineWorklogModel = (sequelize) => {
         allowNull: false,
       },
       hoursWorked: {
-        type: DataTypes.DECIMAL(4,1), // example 7.5
+        type: DataTypes.DECIMAL(4, 1), // example 7.5
+        allowNull: true,
+      },
+      project: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      taskName: {
+        type: DataTypes.STRING,
         allowNull: true,
       },
     },

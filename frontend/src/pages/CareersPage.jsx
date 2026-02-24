@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Search, MapPin, Briefcase,
+  Search, MapPin, Briefcase, IndianRupee,
   Heart, Globe, Award, Users as UsersIcon,
   ArrowRight, Upload, Mail, Phone, FileText,
   CheckCircle, Clock, Home, Linkedin, Github,
   ExternalLink, Menu, X, LogIn, Users, TrendingUp, Shield,
-  Zap, ChevronRight, BarChart3, Calendar, X as XIcon, IndianRupee
+  Zap, ChevronRight, BarChart3, Calendar, X as XIcon, Moon, Sun
 } from 'lucide-react';
 import LiteHRLogo from '../images/LiteHR_logo.png';
 import { toast } from 'react-hot-toast';
 import jobService from '../services/jobService';
+import Chatbot from "../components/Chatbot";
+
 
 export default function CareersPage() {
   const navigate = useNavigate();
   const [menu, setMenu] = useState(false);
+  const [isDarkTheme, setIsDarkTheme] = useState(true);
 
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,6 +41,63 @@ export default function CareersPage() {
 
   const [viewJob, setViewJob] = useState(null); // For Details Modal
   const [showJobDetailsModal, setShowJobDetailsModal] = useState(false);
+
+  // Theme colors based on current theme
+  const theme = {
+    dark: {
+      background: '#0F172A',
+      card: '#1E293B',
+      cardHover: '#334155',
+      border: '#334155',
+      text: {
+        primary: '#F1F5F9',
+        secondary: '#CBD5E1',
+        muted: '#94A3B8',
+        disabled: '#64748B'
+      },
+      gradient: {
+        from: '#0F172A',
+        to: '#1E293B'
+      },
+      heroGradient: 'from-[#0F172A] to-[#1E293B]',
+      ctaGradient: 'from-[#8B5CF6] to-[#10B981]'
+    },
+    light: {
+      background: '#F8FAFC',
+      card: '#FFFFFF',
+      cardHover: '#F1F5F9',
+      border: '#E5E7EB',
+      text: {
+        primary: '#111827',
+        secondary: '#374151',
+        muted: '#6B7280',
+        disabled: '#9CA3AF'
+      },
+      gradient: {
+        from: '#F8FAFC',
+        to: '#FFFFFF'
+      },
+      heroGradient: 'from-[#F8FAFC] to-[#FFFFFF]',
+      ctaGradient: 'from-[#8B5CF6] to-[#10B981]'
+    }
+  };
+
+  const currentTheme = isDarkTheme ? theme.dark : theme.light;
+
+  // Load theme from localStorage on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme !== null) {
+      setIsDarkTheme(savedTheme === 'dark');
+    }
+  }, []);
+
+  // Save theme to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+    document.body.style.backgroundColor = currentTheme.background;
+    document.body.style.color = currentTheme.text.primary;
+  }, [isDarkTheme, currentTheme]);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -79,6 +139,37 @@ export default function CareersPage() {
     }, 100);
   };
 
+  // Toggle theme
+  const toggleTheme = () => {
+    setIsDarkTheme(prev => !prev);
+  };
+
+  // Scroll to top
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Scroll to open positions
+  const scrollToOpenPositions = () => {
+    // First scroll to top of the page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Then after a short delay, scroll to the open positions section
+    setTimeout(() => {
+      const element = document.getElementById('open-positions');
+      if (element) {
+        const headerOffset = 80;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
+  };
+
   const benefits = [
     { icon: <IndianRupee size={24} />, title: "Competitive Salary", description: "Above industry average compensation with regular reviews" },
     { icon: <Heart size={24} />, title: "Health & Wellness", description: "Comprehensive medical, dental, vision insurance for you and family" },
@@ -88,8 +179,7 @@ export default function CareersPage() {
     { icon: <Briefcase size={24} />, title: "Flexible PTO", description: "Unlimited vacation days and paid time off" },
   ];
 
-  // UPDATED: Open modal instead of scrolling
-  // UPDATED: Open apply modal
+  // Open apply modal
   const handleApplyClick = (job, e) => {
     if (e) e.stopPropagation(); // Prevent opening details modal if clicking apply button directly
     setSelectedJob(job);
@@ -101,13 +191,13 @@ export default function CareersPage() {
     setShowJobDetailsModal(false); // Close details if open
   };
 
-  // NEW: Open details modal
+  // Open details modal
   const handleViewJob = (job) => {
     setViewJob(job);
     setShowJobDetailsModal(true);
   };
 
-  // NEW: Close modal
+  // Close modal
   const handleCloseModal = () => {
     setShowApplicationModal(false);
     setShowJobDetailsModal(false);
@@ -204,15 +294,24 @@ export default function CareersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#020617] to-[#0F172A] text-white">
+    <div className="min-h-screen transition-colors duration-500 relative"
+      style={{
+        backgroundColor: currentTheme.background,
+        color: currentTheme.text.primary
+      }}>
       {/* ============= PREMIUM NAVBAR ============= */}
-      <header className="
+      <header className={`
         fixed top-0 left-0 w-full h-16 
-        bg-[#0F172A]/90 backdrop-blur-md
-        text-white flex items-center justify-between 
+        backdrop-blur-md
+        flex items-center justify-between 
         shadow-[0_3px_20px_rgba(0,0,0,0.35)]
-        z-50 px-6 md:px-20 border-b border-[#374151]
-      ">
+        z-50 px-6 md:px-20 border-b
+      `}
+        style={{
+          backgroundColor: `${isDarkTheme ? '#0F172A' : '#F8FAFC'}CC`,
+          borderColor: currentTheme.border
+        }}
+      >
         {/* Logo */}
         <div
           className="flex items-center gap-3 cursor-pointer"
@@ -222,6 +321,7 @@ export default function CareersPage() {
             src={LiteHRLogo}
             alt="LiteHR"
             className="h-10 w-26 object-contain rounded-md"
+            style={{ filter: !isDarkTheme ? 'brightness(0) saturate(100%) invert(27%) sepia(78%) saturate(2000%) hue-rotate(240deg)' : 'none' }}
           />
         </div>
 
@@ -229,36 +329,52 @@ export default function CareersPage() {
         <nav className="hidden sm:flex gap-8 text-sm tracking-wide">
           <button
             onClick={handleHomeClick}
-            className="relative text-sm tracking-wide hover:text-[#8B5CF6] transition group"
+            className="relative group"
+            style={{ color: currentTheme.text.secondary }}
           >
             Home
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#8B5CF6] group-hover:w-full transition-all duration-300"></span>
           </button>
           <button
             onClick={handleFeaturesClick}
-            className="relative text-sm tracking-wide hover:text-[#8B5CF6] transition group"
+            className="relative group"
+            style={{ color: currentTheme.text.secondary }}
           >
             Features
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#8B5CF6] group-hover:w-full transition-all duration-300"></span>
           </button>
           <button
             onClick={handleModulesClick}
-            className="relative text-sm tracking-wide hover:text-[#8B5CF6] transition group"
+            className="relative group"
+            style={{ color: currentTheme.text.secondary }}
           >
             Modules
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#8B5CF6] group-hover:w-full transition-all duration-300"></span>
           </button>
           <button
             onClick={() => { }}
-            className="relative text-sm tracking-wide text-[#8B5CF6] transition group"
+            className="relative group"
+            style={{ color: '#8B5CF6' }}
           >
             Careers
             <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#8B5CF6] transition-all duration-300"></span>
           </button>
         </nav>
 
-        {/* Login Button */}
+        {/* Theme Toggle and Login Button */}
         <div className="flex items-center gap-4">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg transition-colors duration-300 relative overflow-hidden"
+            style={{
+              backgroundColor: isDarkTheme ? '#1E293B' : '#E5E7EB',
+              color: isDarkTheme ? '#F1F5F9' : '#111827'
+            }}
+            aria-label="Toggle theme"
+          >
+            {isDarkTheme ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+
           <button
             onClick={handleLoginClick}
             className="
@@ -266,7 +382,7 @@ export default function CareersPage() {
               px-5 py-2 text-sm rounded-lg shadow-lg 
               transition-all duration-300 hover:shadow-xl
               hover:scale-[1.05] active:scale-[0.98]
-              flex items-center gap-2
+              flex items-center gap-2 text-white
             "
           >
             <LogIn size={16} />
@@ -276,6 +392,7 @@ export default function CareersPage() {
           <button
             onClick={() => setMenu(!menu)}
             className="sm:hidden p-2 rounded-lg hover:bg-[#1E293B] transition"
+            style={{ color: currentTheme.text.primary }}
           >
             {menu ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -284,17 +401,21 @@ export default function CareersPage() {
 
       {/* MOBILE MENU */}
       {menu && (
-        <div className="
-          fixed top-16 left-0 w-full bg-[#0F172A] text-white p-6
-          sm:hidden z-40 border-b border-[#1F2937]
-        ">
+        <div
+          className="fixed top-16 left-0 w-full p-6 sm:hidden z-40 border-b backdrop-blur-xl"
+          style={{
+            backgroundColor: `${isDarkTheme ? '#0F172A' : '#F8FAFC'}F2`,
+            borderColor: currentTheme.border
+          }}
+        >
           <div className="flex flex-col gap-4 text-sm">
             <button
               onClick={() => {
                 handleHomeClick();
                 setMenu(false);
               }}
-              className="py-3 border-b border-[#1F2937] hover:bg-[#1E293B] px-2 rounded transition text-[#D1D5DB] flex items-center gap-2"
+              className="py-3 border-b hover:bg-[#1E293B] px-2 rounded transition flex items-center gap-2"
+              style={{ color: currentTheme.text.secondary, borderColor: currentTheme.border }}
             >
               <Home size={16} />
               Home
@@ -304,7 +425,8 @@ export default function CareersPage() {
                 handleFeaturesClick();
                 setMenu(false);
               }}
-              className="py-3 border-b border-[#1F2937] hover:bg-[#1E293B] px-2 rounded transition text-[#D1D5DB]"
+              className="py-3 border-b hover:bg-[#1E293B] px-2 rounded transition"
+              style={{ color: currentTheme.text.secondary, borderColor: currentTheme.border }}
             >
               Features
             </button>
@@ -313,7 +435,8 @@ export default function CareersPage() {
                 handleModulesClick();
                 setMenu(false);
               }}
-              className="py-3 border-b border-[#1F2937] hover:bg-[#1E293B] px-2 rounded transition text-[#D1D5DB]"
+              className="py-3 border-b hover:bg-[#1E293B] px-2 rounded transition"
+              style={{ color: currentTheme.text.secondary, borderColor: currentTheme.border }}
             >
               Modules
             </button>
@@ -321,7 +444,8 @@ export default function CareersPage() {
               onClick={() => {
                 setMenu(false);
               }}
-              className="py-3 border-b border-[#1F2937] hover:bg-[#1E293B] px-2 rounded transition text-[#D1D5DB] flex items-center gap-2 text-[#8B5CF6]"
+              className="py-3 border-b hover:bg-[#1E293B] px-2 rounded transition flex items-center gap-2"
+              style={{ color: '#8B5CF6', borderColor: currentTheme.border }}
             >
               <Briefcase size={16} />
               Careers
@@ -333,7 +457,7 @@ export default function CareersPage() {
               }}
               className="
                 bg-[#8B5CF6] hover:bg-[#7C3AED] px-4 py-3 rounded-lg shadow transition
-                flex items-center justify-center gap-2
+                flex items-center justify-center gap-2 text-white
               "
             >
               <LogIn size={16} />
@@ -346,24 +470,30 @@ export default function CareersPage() {
       {/* Main Content */}
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="py-20 px-6 md:px-20 bg-gradient-to-r from-[#0F172A] to-[#1E293B]">
+        <section className={`py-20 px-6 md:px-20 bg-gradient-to-r ${currentTheme.heroGradient}`}>
           <div className="max-w-6xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-[rgba(139,92,246,0.2)] px-4 py-2 rounded-full text-sm text-[#8B5CF6] mb-6">
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm mb-6"
+              style={{
+                backgroundColor: `${isDarkTheme ? 'rgba(139,92,246,0.2)' : 'rgba(139,92,246,0.1)'}`,
+                color: '#8B5CF6'
+              }}
+            >
               <Briefcase size={16} />
               We're Hiring!
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight" style={{ color: currentTheme.text.primary }}>
               Build the Future of
               <span className="block bg-gradient-to-r from-[#8B5CF6] to-[#10B981] bg-clip-text text-transparent">
                 HR Technology
               </span>
             </h1>
-            <p className="text-xl text-[#9CA3AF] max-w-3xl mx-auto mb-10">
+            <p className="text-xl max-w-3xl mx-auto mb-10" style={{ color: currentTheme.text.muted }}>
               Join our mission to revolutionize HR management. We're looking for passionate
               individuals who want to make an impact on how companies manage their most valuable asset - people.
             </p>
             <button
-              onClick={() => document.getElementById('open-positions').scrollIntoView({ behavior: 'smooth' })}
+              onClick={scrollToOpenPositions}
               className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 mx-auto shadow-lg hover:shadow-xl transition"
             >
               View Open Positions
@@ -387,8 +517,8 @@ export default function CareersPage() {
         <section id="open-positions" className="py-20 px-6 md:px-20">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-14">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Open Positions</h2>
-              <p className="text-lg text-[#9CA3AF] max-w-2xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: currentTheme.text.primary }}>Open Positions</h2>
+              <p className="text-lg max-w-2xl mx-auto" style={{ color: currentTheme.text.muted }}>
                 Find the perfect role that matches your skills and passion
               </p>
             </div>
@@ -396,93 +526,96 @@ export default function CareersPage() {
             {loading ? (
               <div className="text-center py-20">
                 <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B5CF6]"></div>
-                <p className="mt-4 text-[#9CA3AF]">Loading positions...</p>
+                <p className="mt-4" style={{ color: currentTheme.text.muted }}>Loading positions...</p>
               </div>
             ) : jobs.length === 0 ? (
               <div className="text-center py-20">
-                <Briefcase size={48} className="mx-auto mb-4 text-[#9CA3AF]" />
-                <p className="text-xl text-[#9CA3AF]">No open positions at the moment</p>
-                <p className="text-sm text-[#9CA3AF] mt-2">Check back soon for new opportunities!</p>
+                <Briefcase size={48} className="mx-auto mb-4" style={{ color: currentTheme.text.muted }} />
+                <p className="text-xl" style={{ color: currentTheme.text.muted }}>No open positions at the moment</p>
+                <p className="text-sm mt-2" style={{ color: currentTheme.text.muted }}>Check back soon for new opportunities!</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+              <div className="space-y-6">
                 {jobs.map((job) => (
                   <div
                     key={job.id}
-                    onClick={() => handleViewJob(job)} // Make card clickable
-                    className="bg-[#1E293B] rounded-xl p-6 border border-[#374151] hover:border-[#8B5CF6] transition-all hover:shadow-xl hover:shadow-[#8B5CF6]/10 group flex flex-col h-full cursor-pointer"
+                    onClick={() => handleViewJob(job)}
+                    className="rounded-xl border transition-all hover:shadow-xl hover:shadow-[#8B5CF6]/10 group flex flex-col md:flex-row cursor-pointer overflow-hidden"
+                    style={{
+                      backgroundColor: currentTheme.card,
+                      borderColor: currentTheme.border,
+                    }}
                   >
-                    {/* Header */}
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex-1 min-w-0 pr-2">
-                        <h3 className="text-xl font-bold group-hover:text-[#8B5CF6] transition mb-1 line-clamp-2">
-                          {job.title}
-                        </h3>
-                        <p className="text-sm text-[#10B981] font-medium">
-                          {job.department}
-                        </p>
+                    {/* Left Section - Job Details */}
+                    <div className="flex-1 p-6 md:p-8 border-b md:border-b-0 md:border-r" style={{ borderColor: currentTheme.border }}>
+                      {/* Job Type Badge */}
+                      <div className="flex justify-between items-start mb-4">
+                        <span className="bg-[rgba(139,92,246,0.2)] text-[#8B5CF6] text-xs font-semibold px-3 py-1 rounded-full">
+                          {job.jobType}
+                        </span>
                       </div>
-                      <span className="bg-[rgba(139,92,246,0.2)] text-[#8B5CF6] text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap flex-shrink-0">
-                        {job.jobType}
-                      </span>
+
+                      {/* Job Title */}
+                      <h3 className="text-2xl font-bold group-hover:text-[#8B5CF6] transition mb-4" style={{ color: currentTheme.text.primary }}>
+                        {job.title}
+                      </h3>
+
+                      {/* Department */}
+                      <p className="text-sm text-[#10B981] font-medium mb-4">
+                        {job.department}
+                      </p>
+
+                      {/* Location, Salary, Experience */}
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-sm" style={{ color: currentTheme.text.secondary }}>
+                          <MapPin size={16} style={{ color: currentTheme.text.muted }} />
+                          <span>{job.location}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm" style={{ color: currentTheme.text.secondary }}>
+                          <IndianRupee size={16} style={{ color: currentTheme.text.muted }} />
+                          <span>{formatSalary(job)}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm" style={{ color: currentTheme.text.secondary }}>
+                          <Briefcase size={16} style={{ color: currentTheme.text.muted }} />
+                          <span>{formatExperience(job)}</span>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Location, Salary and Experience */}
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center gap-2 text-sm text-[#D1D5DB]">
-                        <MapPin size={16} className="text-[#9CA3AF] flex-shrink-0" />
-                        <span className="truncate">{job.location}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-[#D1D5DB]">
+                    {/* Right Section - Requirements and Apply Button */}
+                    <div className="flex-1 p-6 md:p-8 flex flex-col">
+                      {/* Requirements */}
+                      {job.requirements && (
+                        <div className="mb-6 flex-grow">
+                          <div className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: currentTheme.text.primary }}>
+                            <CheckCircle size={14} className="text-[#8B5CF6]" />
+                            Key Requirements
+                          </div>
+                          <ul className="space-y-2">
+                            {job.requirements.split('\n').filter(req => req.trim()).slice(0, 4).map((req, idx) => (
+                              <li key={idx} className="flex items-start gap-2 text-sm" style={{ color: currentTheme.text.secondary }}>
+                                <div className="w-1.5 h-1.5 bg-[#8B5CF6] rounded-full mt-1.5 flex-shrink-0"></div>
+                                <span className="flex-1 line-clamp-1">{req.trim()}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
 
+                      {/* Apply Button */}
+                      <button
+                        onClick={(e) => handleApplyClick(job, e)}
+                        className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold py-3 rounded-lg transition-all flex items-center justify-center gap-2 group-hover:gap-3 shadow-lg hover:shadow-xl"
+                      >
+                        Apply Now
+                        <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                      </button>
 
-                        <IndianRupee size={16} className="text-[#9CA3AF] flex-shrink-0" />
-
-                        <span className="truncate">{formatSalary(job)}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-[#D1D5DB]">
-                        <Briefcase size={16} className="text-[#9CA3AF] flex-shrink-0" />
-                        <span className="truncate">{formatExperience(job)}</span>
-                      </div>
-                    </div>
-
-                    {/* Description */}
-                    <div className="mb-4 flex-grow">
-                      <p className="text-[#9CA3AF] text-sm leading-relaxed line-clamp-3">
-                        {job.description}
+                      {/* View Details Hint */}
+                      <p className="text-center text-xs mt-3 group-hover:text-[#8B5CF6] transition-colors" style={{ color: currentTheme.text.muted }}>
+                        Click card to view full details
                       </p>
                     </div>
-
-                    {/* Requirements */}
-                    {job.requirements && (
-                      <div className="mb-6 bg-[#111827] rounded-lg p-4 border border-[#374151]">
-                        <div className="text-sm font-semibold text-[#F9FAFB] mb-3 flex items-center gap-2">
-                          <CheckCircle size={14} className="text-[#8B5CF6]" />
-                          Key Requirements
-                        </div>
-                        <ul className="space-y-2">
-                          {job.requirements.split('\n').filter(req => req.trim()).slice(0, 3).map((req, idx) => (
-                            <li key={idx} className="flex items-start gap-2 text-sm text-[#D1D5DB]">
-                              <div className="w-1.5 h-1.5 bg-[#8B5CF6] rounded-full mt=1.5 flex-shrink-0"></div>
-                              <span className="flex-1">{req.trim()}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Apply Button */}
-                    <button
-                      onClick={() => handleApplyClick(job)}
-                      className="w-full bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-semibold py-3 rounded-lg transition-all flex items-center justify-center gap-2 group-hover:gap-3 shadow-lg hover:shadow-xl mt-auto"
-                    >
-                      Apply Now
-                      <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-                    </button>
-                    {/* View Details Text (Optional hint) */}
-                    <p className="text-center text-xs text-[#9CA3AF] mt-3 group-hover:text-[#8B5CF6] transition-colors">
-                      Click card to view full details
-                    </p>
                   </div>
                 ))}
               </div>
@@ -494,22 +627,28 @@ export default function CareersPage() {
         <section className="py-20 px-6 md:px-20">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-14">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Join LiteHR</h2>
-              <p className="text-lg text-[#9CA3AF] max-w-2xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: currentTheme.text.primary }}>Why Join LiteHR</h2>
+              <p className="text-lg max-w-2xl mx-auto" style={{ color: currentTheme.text.muted }}>
                 We're building more than software - we're building a culture
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {benefits.map((benefit, index) => (
-                <div key={index} className="bg-[#1E293B] rounded-xl p-6 hover:bg-[#2D3748] transition group">
+                <div
+                  key={index}
+                  className="rounded-xl p-6 transition group"
+                  style={{
+                    backgroundColor: currentTheme.card,
+                  }}
+                >
                   <div className="w-14 h-14 bg-gradient-to-br from-[rgba(139,92,246,0.2)] to-[rgba(16,185,129,0.2)] rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition">
                     <div className="text-[#8B5CF6]">
                       {benefit.icon}
                     </div>
                   </div>
-                  <h4 className="text-xl font-semibold mb-3 text-[#F9FAFB]">{benefit.title}</h4>
-                  <p className="text-[#9CA3AF]">{benefit.description}</p>
+                  <h4 className="text-xl font-semibold mb-3" style={{ color: currentTheme.text.primary }}>{benefit.title}</h4>
+                  <p className="text-sm" style={{ color: currentTheme.text.muted }}>{benefit.description}</p>
                 </div>
               ))}
             </div>
@@ -517,8 +656,8 @@ export default function CareersPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-20 px-6 md:px-20 bg-gradient-to-r from-[#8B5CF6] to-[#10B981]">
-          <div className="max-w-4xl mx-auto text-center">
+        <section className={`py-20 px-6 md:px-20 bg-gradient-to-r ${currentTheme.ctaGradient}`}>
+          <div className="max-w-4xl mx-auto text-center text-white">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               Ready to Build with Us?
             </h2>
@@ -539,27 +678,41 @@ export default function CareersPage() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-[#020617] py-8 border-t border-[#374151]">
+      {/* Footer - UPDATED with logo and go to top button */}
+      <footer
+        className="py-8 border-t"
+        style={{
+          backgroundColor: isDarkTheme ? '#020617' : '#F8FAFC',
+          borderColor: currentTheme.border
+        }}
+      >
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 bg-gradient-to-r from-[#8B5CF6] to-[#10B981] rounded-lg flex items-center justify-center">
-                <Briefcase size={20} />
-              </div>
-              <span className="text-xl font-semibold">LiteHR Careers</span>
+            {/* Logo */}
+            <div className="flex items-center gap-2 cursor-pointer" onClick={handleHomeClick}>
+              <img
+                src={LiteHRLogo}
+                alt="LiteHR"
+                className="h-8 w-auto object-contain"
+                style={{ filter: !isDarkTheme ? 'brightness(0) saturate(100%) invert(27%) sepia(78%) saturate(2000%) hue-rotate(240deg)' : 'brightness(0) invert(1)' }}
+              />
             </div>
 
-            <p className="text-sm text-[#9CA3AF] text-center">
-              © 2025 LiteHR. All rights reserved. | Privacy Policy | Terms of Service
+            <p className="text-sm text-center" style={{ color: currentTheme.text.muted }}>
+              © 2025 LiteHR. All rights reserved.
             </p>
 
+            {/* Go to Top Button */}
             <button
-              onClick={handleLoginClick}
-              className="text-sm text-[#9CA3AF] hover:text-white transition flex items-center gap-2"
+              onClick={scrollToTop}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 group"
+              style={{
+                backgroundColor: isDarkTheme ? '#1E293B' : '#E5E7EB',
+                color: currentTheme.text.primary
+              }}
             >
-              <ArrowRight size={14} />
-              Employee Portal
+              <ArrowRight size={16} className="rotate-[-90deg] group-hover:translate-y-[-2px] transition-transform" />
+              <span className="text-sm">Go to Top</span>
             </button>
           </div>
         </div>
@@ -576,27 +729,53 @@ export default function CareersPage() {
 
           {/* Modal */}
           <div className="fixed inset-0 flex items-center justify-center p-4 z-50 overflow-y-auto">
-            <div className="bg-[#1E293B] rounded-2xl border border-[#374151] w-full max-w-4xl max-h-[90vh] overflow-y-auto relative animate-slideIn">
+            <div
+              className="rounded-2xl border w-full max-w-4xl max-h-[90vh] overflow-y-auto relative animate-slideIn"
+              style={{
+                backgroundColor: currentTheme.card,
+                borderColor: currentTheme.border
+              }}
+            >
 
               {/* Close Button */}
               <button
                 onClick={handleCloseModal}
-                className="absolute top-4 right-4 p-2 bg-[#111827] rounded-full text-[#9CA3AF] hover:text-white hover:bg-[#374151] transition z-10"
+                className="absolute top-4 right-4 p-2 rounded-full transition z-10"
+                style={{
+                  backgroundColor: isDarkTheme ? '#111827' : '#F3F4F6',
+                  color: currentTheme.text.muted
+                }}
               >
                 <X size={20} />
               </button>
 
               {/* Modal Header / Cover */}
-              <div className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] p-8 border-b border-[#374151]">
+              <div
+                className="p-8 border-b"
+                style={{
+                  background: isDarkTheme
+                    ? 'linear-gradient(to right, #0F172A, #1E293B)'
+                    : 'linear-gradient(to right, #F8FAFC, #FFFFFF)',
+                  borderColor: currentTheme.border
+                }}
+              >
                 <div className="inline-flex items-center gap-2 bg-[rgba(16,185,129,0.2)] text-[#10B981] px-3 py-1 rounded-full text-sm font-semibold mb-3">
                   {viewJob.jobType}
                 </div>
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">{viewJob.title}</h2>
-                <div className="flex flex-wrap gap-4 text-[#D1D5DB] text-sm mt-4">
-                  <span className="flex items-center gap-1.5"><Briefcase size={16} className="text-[#8B5CF6]" /> {viewJob.department}</span>
-                  <span className="flex items-center gap-1.5"><MapPin size={16} className="text-[#8B5CF6]" /> {viewJob.location}</span>
-                  <span className="flex items-center gap-1.5"><IndianRupee size={16} className="text-[#8B5CF6]" /> {formatSalary(viewJob)}</span>
-                  <span className="flex items-center gap-1.5"><Clock size={16} className="text-[#8B5CF6]" /> {formatExperience(viewJob)}</span>
+                <h2 className="text-3xl md:text-4xl font-bold mb-2" style={{ color: currentTheme.text.primary }}>{viewJob.title}</h2>
+                <div className="flex flex-wrap gap-4 text-sm mt-4">
+                  <span className="flex items-center gap-1.5" style={{ color: currentTheme.text.secondary }}>
+                    <Briefcase size={16} className="text-[#8B5CF6]" /> {viewJob.department}
+                  </span>
+                  <span className="flex items-center gap-1.5" style={{ color: currentTheme.text.secondary }}>
+                    <MapPin size={16} className="text-[#8B5CF6]" /> {viewJob.location}
+                  </span>
+                  <span className="flex items-center gap-1.5" style={{ color: currentTheme.text.secondary }}>
+                    <IndianRupee size={16} className="text-[#8B5CF6]" /> {formatSalary(viewJob)}
+                  </span>
+                  <span className="flex items-center gap-1.5" style={{ color: currentTheme.text.secondary }}>
+                    <Clock size={16} className="text-[#8B5CF6]" /> {formatExperience(viewJob)}
+                  </span>
                 </div>
               </div>
 
@@ -605,11 +784,11 @@ export default function CareersPage() {
 
                 {/* Description */}
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                  <h3 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: currentTheme.text.primary }}>
                     <FileText size={20} className="text-[#8B5CF6]" />
                     About the Role
                   </h3>
-                  <p className="text-[#9CA3AF] leading-relaxed whitespace-pre-wrap">
+                  <p className="leading-relaxed whitespace-pre-wrap" style={{ color: currentTheme.text.muted }}>
                     {viewJob.description}
                   </p>
                 </div>
@@ -618,13 +797,13 @@ export default function CareersPage() {
                   {/* Responsibilities */}
                   {viewJob.responsibilities && (
                     <div>
-                      <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                      <h3 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: currentTheme.text.primary }}>
                         <CheckCircle size={20} className="text-[#8B5CF6]" />
                         Key Responsibilities
                       </h3>
                       <ul className="space-y-3">
                         {viewJob.responsibilities.split('\n').filter(r => r.trim()).map((res, idx) => (
-                          <li key={idx} className="flex items-start gap-3 text-[#D1D5DB]">
+                          <li key={idx} className="flex items-start gap-3" style={{ color: currentTheme.text.secondary }}>
                             <div className="w-1.5 h-1.5 bg-[#8B5CF6] rounded-full mt-2 flex-shrink-0"></div>
                             <span className="flex-1 leading-relaxed">{res.trim()}</span>
                           </li>
@@ -636,13 +815,13 @@ export default function CareersPage() {
                   {/* Requirements */}
                   {viewJob.requirements && (
                     <div>
-                      <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                      <h3 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: currentTheme.text.primary }}>
                         <Award size={20} className="text-[#8B5CF6]" />
                         Requirements
                       </h3>
                       <ul className="space-y-3">
                         {viewJob.requirements.split('\n').filter(r => r.trim()).map((req, idx) => (
-                          <li key={idx} className="flex items-start gap-3 text-[#D1D5DB]">
+                          <li key={idx} className="flex items-start gap-3" style={{ color: currentTheme.text.secondary }}>
                             <div className="w-1.5 h-1.5 bg-[#10B981] rounded-full mt-2 flex-shrink-0"></div>
                             <span className="flex-1 leading-relaxed">{req.trim()}</span>
                           </li>
@@ -655,13 +834,22 @@ export default function CareersPage() {
                 {/* Skills (if available) */}
                 {viewJob.skills && (
                   <div>
-                    <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <h3 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: currentTheme.text.primary }}>
                       <Zap size={20} className="text-[#8B5CF6]" />
                       Skills Required
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {viewJob.skills.split(',').map((skill, idx) => (
-                        <span key={idx} className="bg-[#1E293B] border border-[#374151] px-3 py-1.5 rounded-lg text-sm text-[#D1D5DB]">
+                        <span
+                          key={idx}
+                          className="px-3 py-1.5 rounded-lg text-sm"
+                          style={{
+                            backgroundColor: currentTheme.card,
+                            borderColor: currentTheme.border,
+                            border: '1px solid',
+                            color: currentTheme.text.secondary
+                          }}
+                        >
                           {skill.trim()}
                         </span>
                       ))}
@@ -670,10 +858,13 @@ export default function CareersPage() {
                 )}
 
                 {/* Footer Action */}
-                <div className="pt-8 border-t border-[#374151] flex justify-end gap-4">
+                <div className="pt-8 border-t flex justify-end gap-4" style={{ borderColor: currentTheme.border }}>
                   <button
                     onClick={handleCloseModal}
-                    className="px-6 py-3 rounded-lg text-[#9CA3AF] hover:text-white hover:bg-[#374151] transition font-medium"
+                    className="px-6 py-3 rounded-lg transition font-medium"
+                    style={{
+                      color: currentTheme.text.muted
+                    }}
                   >
                     Close
                   </button>
@@ -703,25 +894,38 @@ export default function CareersPage() {
 
           {/* Modal */}
           <div className="fixed inset-0 flex items-center justify-center p-4 z-50 overflow-y-auto">
-            <div className="bg-[#1E293B] rounded-2xl border border-[#374151] w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div
+              className="rounded-2xl border w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+              style={{
+                backgroundColor: currentTheme.card,
+                borderColor: currentTheme.border
+              }}
+            >
               {/* Modal Header */}
-              <div className="sticky top-0 bg-[#1E293B] px-8 py-6 border-b border-[#374151] flex items-center justify-between">
+              <div
+                className="sticky top-0 px-8 py-6 border-b flex items-center justify-between"
+                style={{
+                  backgroundColor: currentTheme.card,
+                  borderColor: currentTheme.border
+                }}
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-[rgba(139,92,246,0.2)] rounded-lg flex items-center justify-center">
                     <FileText size={24} className="text-[#8B5CF6]" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold">
+                    <h3 className="text-2xl font-bold" style={{ color: currentTheme.text.primary }}>
                       {selectedJob ? `Apply for: ${selectedJob.title}` : 'Apply for Position'}
                     </h3>
-                    <p className="text-[#9CA3AF]">Fill out your application below</p>
+                    <p className="text-sm" style={{ color: currentTheme.text.muted }}>Fill out your application below</p>
                   </div>
                 </div>
                 <button
                   onClick={handleCloseModal}
                   className="w-10 h-10 rounded-lg hover:bg-[#111827] flex items-center justify-center transition"
+                  style={{ color: currentTheme.text.muted }}
                 >
-                  <XIcon size={24} className="text-[#9CA3AF]" />
+                  <X size={24} />
                 </button>
               </div>
 
@@ -730,42 +934,57 @@ export default function CareersPage() {
                 <form onSubmit={handleSubmitApplication} className="space-y-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Full Name *</label>
+                      <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.text.secondary }}>Full Name *</label>
                       <input
                         type="text"
                         required
                         value={applicationForm.name}
                         onChange={(e) => setApplicationForm({ ...applicationForm, name: e.target.value })}
-                        className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                        className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                        style={{
+                          backgroundColor: isDarkTheme ? '#111827' : '#F9FAFB',
+                          borderColor: currentTheme.border,
+                          color: currentTheme.text.primary
+                        }}
                         placeholder="John Doe"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Email Address *</label>
+                      <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.text.secondary }}>Email Address *</label>
                       <input
                         type="email"
                         required
                         value={applicationForm.email}
                         onChange={(e) => setApplicationForm({ ...applicationForm, email: e.target.value })}
-                        className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                        className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                        style={{
+                          backgroundColor: isDarkTheme ? '#111827' : '#F9FAFB',
+                          borderColor: currentTheme.border,
+                          color: currentTheme.text.primary
+                        }}
                         placeholder="john@example.com"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Phone Number</label>
+                      <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.text.secondary }}>Phone Number</label>
                       <input
                         type="tel"
                         value={applicationForm.phone}
                         onChange={(e) => setApplicationForm({ ...applicationForm, phone: e.target.value })}
-                        className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                        className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                        style={{
+                          backgroundColor: isDarkTheme ? '#111827' : '#F9FAFB',
+                          borderColor: currentTheme.border,
+                          color: currentTheme.text.primary
+                        }}
                         placeholder="+1 (555) 123-4567"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Position *</label>
+                      <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.text.secondary }}>Position *</label>
                       <select
                         required
                         value={applicationForm.position}
@@ -774,7 +993,12 @@ export default function CareersPage() {
                           setSelectedJob(job);
                           setApplicationForm({ ...applicationForm, position: e.target.value });
                         }}
-                        className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                        className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                        style={{
+                          backgroundColor: isDarkTheme ? '#111827' : '#F9FAFB',
+                          borderColor: currentTheme.border,
+                          color: currentTheme.text.primary
+                        }}
                       >
                         <option value="">Select a position</option>
                         {jobs.map(job => (
@@ -784,28 +1008,38 @@ export default function CareersPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-[#D1D5DB] mb-2">LinkedIn Profile</label>
+                      <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.text.secondary }}>LinkedIn Profile</label>
                       <div className="relative">
-                        <Linkedin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9CA3AF]" size={18} />
+                        <Linkedin className="absolute left-3 top-1/2 transform -translate-y-1/2" size={18} style={{ color: currentTheme.text.muted }} />
                         <input
                           type="url"
                           value={applicationForm.linkedin}
                           onChange={(e) => setApplicationForm({ ...applicationForm, linkedin: e.target.value })}
-                          className="w-full bg-[#111827] border border-[#374151] rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                          className="w-full border rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                          style={{
+                            backgroundColor: isDarkTheme ? '#111827' : '#F9FAFB',
+                            borderColor: currentTheme.border,
+                            color: currentTheme.text.primary
+                          }}
                           placeholder="https://linkedin.com/in/yourprofile"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-[#D1D5DB] mb-2">GitHub Profile</label>
+                      <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.text.secondary }}>GitHub Profile</label>
                       <div className="relative">
-                        <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9CA3AF]" size={18} />
+                        <Github className="absolute left-3 top-1/2 transform -translate-y-1/2" size={18} style={{ color: currentTheme.text.muted }} />
                         <input
                           type="url"
                           value={applicationForm.github}
                           onChange={(e) => setApplicationForm({ ...applicationForm, github: e.target.value })}
-                          className="w-full bg-[#111827] border border-[#374151] rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                          className="w-full border rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                          style={{
+                            backgroundColor: isDarkTheme ? '#111827' : '#F9FAFB',
+                            borderColor: currentTheme.border,
+                            color: currentTheme.text.primary
+                          }}
                           placeholder="https://github.com/yourusername"
                         />
                       </div>
@@ -813,25 +1047,36 @@ export default function CareersPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Cover Letter *</label>
+                    <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.text.secondary }}>Cover Letter *</label>
                     <textarea
                       required
                       value={applicationForm.coverLetter}
                       onChange={(e) => setApplicationForm({ ...applicationForm, coverLetter: e.target.value })}
                       rows="5"
-                      className="w-full bg-[#111827] border border-[#374151] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                      className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
+                      style={{
+                        backgroundColor: isDarkTheme ? '#111827' : '#F9FAFB',
+                        borderColor: currentTheme.border,
+                        color: currentTheme.text.primary
+                      }}
                       placeholder="Tell us about yourself, your experience, and why you're interested in this position..."
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-[#D1D5DB] mb-2">Resume/CV *</label>
+                    <label className="block text-sm font-medium mb-2" style={{ color: currentTheme.text.secondary }}>Resume/CV *</label>
                     <div className="space-y-4">
                       <label className="block cursor-pointer">
-                        <div className="bg-[#111827] border-2 border-dashed border-[#374151] rounded-lg px-4 py-8 text-center hover:border-[#8B5CF6] transition">
-                          <Upload className="mx-auto mb-3 text-[#9CA3AF]" size={28} />
-                          <div className="text-[#D1D5DB] font-medium mb-1">Click to upload your resume</div>
-                          <div className="text-sm text-[#9CA3AF]">PDF, DOC, DOCX up to 5MB</div>
+                        <div
+                          className="border-2 border-dashed rounded-lg px-4 py-8 text-center hover:border-[#8B5CF6] transition"
+                          style={{
+                            backgroundColor: isDarkTheme ? '#111827' : '#F9FAFB',
+                            borderColor: currentTheme.border
+                          }}
+                        >
+                          <Upload className="mx-auto mb-3" size={28} style={{ color: currentTheme.text.muted }} />
+                          <div className="font-medium mb-1" style={{ color: currentTheme.text.secondary }}>Click to upload your resume</div>
+                          <div className="text-sm" style={{ color: currentTheme.text.muted }}>PDF, DOC, DOCX up to 5MB</div>
                           <input
                             type="file"
                             className="hidden"
@@ -843,12 +1088,18 @@ export default function CareersPage() {
                       </label>
 
                       {applicationForm.resumeName && (
-                        <div className="flex items-center justify-between bg-[#111827] rounded-lg px-4 py-3 border border-[#374151]">
+                        <div
+                          className="flex items-center justify-between rounded-lg px-4 py-3 border"
+                          style={{
+                            backgroundColor: isDarkTheme ? '#111827' : '#F9FAFB',
+                            borderColor: currentTheme.border
+                          }}
+                        >
                           <div className="flex items-center gap-3">
                             <FileText size={20} className="text-[#8B5CF6]" />
                             <div>
-                              <div className="text-[#F9FAFB] font-medium">{applicationForm.resumeName}</div>
-                              <div className="text-sm text-[#9CA3AF]">Ready to submit</div>
+                              <div className="font-medium" style={{ color: currentTheme.text.primary }}>{applicationForm.resumeName}</div>
+                              <div className="text-sm" style={{ color: currentTheme.text.muted }}>Ready to submit</div>
                             </div>
                           </div>
                           <button
@@ -871,7 +1122,7 @@ export default function CareersPage() {
                       Submit Application
                       <ArrowRight size={18} />
                     </button>
-                    <p className="text-sm text-[#9CA3AF] text-center mt-3">
+                    <p className="text-sm text-center mt-3" style={{ color: currentTheme.text.muted }}>
                       By submitting, you agree to our privacy policy. We'll contact you within 5-7 business days.
                     </p>
                   </div>
@@ -898,6 +1149,14 @@ export default function CareersPage() {
           animation: slideIn 0.3s ease-out;
         }
       `}</style>
+      {/* Add Chatbot at the end */}
+      <Chatbot
+        endpoint="/api/chatbot/public-ask"
+        welcomeMessage={`👋 Welcome to LiteHR Careers!\nAsk me anything about job openings, application process, benefits, or HR workflows.\nI’m here to help 😊`}
+        title="LiteHR Careers Assistant"
+        subtitle="FAQs & Support"
+      />
     </div>
+
   );
 }
